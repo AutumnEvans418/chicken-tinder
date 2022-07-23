@@ -1,4 +1,4 @@
-﻿using ChickenTinder.Client.Pages;
+﻿using ChickenTinder.Shared.Models;
 
 namespace ChickenTinder.Server.Managers
 {
@@ -6,7 +6,7 @@ namespace ChickenTinder.Server.Managers
     {
         private readonly RestaurantManager _reastaurantManager;
 
-        private readonly Dictionary<int, Room> _rooms = new();
+        private readonly Dictionary<int, DiningRoom> _rooms = new();
 
 
         public RoomManager(RestaurantManager restaurantManager)
@@ -28,7 +28,5 @@ namespace ChickenTinder.Server.Managers
         {
 
         }
-
-        public void 
     }
 }

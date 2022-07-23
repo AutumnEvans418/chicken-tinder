@@ -5,7 +5,7 @@ namespace ChickenTinder.Client.Data
 {
     public class ServerConnection
     {
-        private Room? _room = null;
+        private DiningRoom? _room = null;
         private readonly HubConnection _hubConnection;
 
         public ServerConnection(HubConnection hub)
