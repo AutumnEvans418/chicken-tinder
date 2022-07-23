@@ -13,38 +13,49 @@ namespace ChickenTinder.Server.Hubs
         }
 
 
-
         public async Task<DiningRoom?> CreateRoom(User user)
         {
             return await _roomManager.CreateRoom(user);
         }
 
-        public DiningRoom? JoinRoom(User user, int roomId)
+        public async Task<DiningRoom?> JoinRoom(User user, int roomId)
         {
+            await InvokeJoin(roomId, user.SignalRConnection);
             return _roomManager.JoinRoom(user, roomId);
-        }
-
-        public async Task UpdateRestaurant(Match match)
-        {
-
         }
 
         public async Task Start(int roomId)
         {
-
+            await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnStart");
         }
 
         public async Task Like(int roomId, string RestaurantId, int votes)
         {
             if (_roomManager.Vote(roomId, Context.ConnectionId, RestaurantId, votes))
             {
-                await InvokeMatch(RestaurantId);
+                await InvokeMatch(roomId, RestaurantId);
             }
         }
 
-        private async Task InvokeMatch(string RestaurantId)
+        public async Task LeaveRoom(User user, int roomId)
         {
-          //  Clients.
+            _roomManager.LeaveRoom(user, roomId);
+            await InvokeJoin(roomId, user.SignalRConnection);
+        }
+
+        private async Task InvokeMatch(int roomId, string RestaurantId)
+        {
+            await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnMatch", RestaurantId);
+        }
+
+        private async Task InvokeJoin(int roomId, string userId)
+        {
+            await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnJoin", userId);
+        }
+
+        private async Task InvokeLeave(int roomId, string userId)
+        {
+            await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnLeave", userId);
         }
     }
 }

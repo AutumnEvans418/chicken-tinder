@@ -17,15 +17,15 @@ namespace ChickenTinder.Server.Managers
 
         public async Task<List<Restaurant>?> GetRestaurants(string location)
         {
-            var cache = _cache.Get<List<Restaurant>>(location);
+            var output = _cache.Get<List<Restaurant>>(location);
 
-            if (cache is null)
+            if (output is null)
             {
-                cache = (await _httpClient.GetFromJsonAsync<YelpResponce>("search?location=" + location))?.Businesses;
-                _cache.Set(location, cache, TimeSpan.FromMinutes(15));
+                output = (await _httpClient.GetFromJsonAsync<YelpResponce>("search?location=" + location))?.Businesses;
+                _cache.Set(location, output, TimeSpan.FromMinutes(15));
             }
 
-            return cache;
+            return output;
         }
     }
 }

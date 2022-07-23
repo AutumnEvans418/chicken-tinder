@@ -11,9 +11,10 @@ namespace ChickenTinder.Server.Managers
         private readonly Dictionary<int, DiningRoom> _rooms = new();
 
 
-        public RoomManager(RestaurantManager restaurantManager)
+        public RoomManager(RestaurantManager restaurantManager, MatchService match)
         {
-            _reastaurantManager = restaurantManager;
+            _matchService = match;
+           _reastaurantManager = restaurantManager;
         }
 
         public async Task<DiningRoom?> CreateRoom(User user)
@@ -80,6 +81,14 @@ namespace ChickenTinder.Server.Managers
             }
 
             return false;
+        }
+
+        public List<string> GetUserIds(int roomId)
+        {
+            if (_rooms.TryGetValue(roomId, out var room))
+                return room.Users.Keys.ToList();
+            else
+                return new();
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using ChickenTinder.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.JSInterop;
 
 namespace ChickenTinder.Client.Data
 {
-    public class ServerConnection
+    public class ServerConnection : IAsyncDisposable
     {
         private DiningRoom? _room = null;
         private User? _user;
@@ -14,7 +15,7 @@ namespace ChickenTinder.Client.Data
         public ServerConnection(NavigationManager NavigationManager)
         {
             _hubConnection = new HubConnectionBuilder()
-                                .WithUrl(NavigationManager.ToAbsoluteUri("/tenderhub"))
+                                .WithUrl(NavigationManager.ToAbsoluteUri("/tinderhub"))
                                 .Build();
 
 
@@ -35,6 +36,7 @@ namespace ChickenTinder.Client.Data
 
             _hubConnection.On<string>("OnMatch", (x) =>
             {
+                Console.WriteLine(x + "   is a match !!!!!!!");
                 OnMatch?.Invoke(x);
             });
         }
@@ -91,12 +93,28 @@ namespace ChickenTinder.Client.Data
             }
         }
 
+        public async Task LeaveRoom()
+        {
+            if (_hubConnection is not null && HasRoom)
+            {
+                _room = await _hubConnection.InvokeAsync<DiningRoom>("LeaveRoom", _room!.ID, _user);
+            }
+        }
+
         public async Task Like(string RestaurantId, int votes)
         {
             if (_hubConnection is not null && _room is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("Like", _room?.ID, RestaurantId, votes);
             }
+        }
+
+
+
+        public async ValueTask DisposeAsync()
+        {
+            await LeaveRoom();
+            await _hubConnection.DisposeAsync();
         }
     }
 }

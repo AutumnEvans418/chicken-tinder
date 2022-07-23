@@ -16,7 +16,6 @@ builder.Services.AddSignalR();
 builder.Services.AddHttpClient("YelpClient", x=>
 {
     x.BaseAddress = new Uri("https://api.yelp.com/v3/businesses/");
-
     x.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "ffW4qTtxA6sIEDs9oDQuWwBho-X_cLugkW-oUwn1fF-UI1ADd8UfySOq-29IWT1AnZhAJGxzkh489AOPV7wLQr40zgQe2cq-AkriRGqrFXqbox27-_9MjTWpBanaYnYx");
 });
 
@@ -55,7 +54,7 @@ app.UseRouting();
 
 app.MapRazorPages();
 app.MapControllers();
-app.MapHub<TinderHub>("/tenderhub");
+app.MapHub<TinderHub>("/tinderhub");
 app.MapFallbackToFile("index.html");
 
 app.Run();
