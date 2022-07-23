@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,5 +23,18 @@ namespace ChickenTinder.Shared.Models
         public List<Restaurant> Restaurants { get; set; }
         public List<Match> Matches { get; set; }
         
+        public void Join(User user)
+        {
+            Users.Add(user);
+        }
+        public void Leave(User user)
+        {
+            Users.Remove(user);
+        }
+
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

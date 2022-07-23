@@ -1,4 +1,5 @@
 ﻿using ChickenTinder.Shared.Core;
+using ChickenTinder.Shared.Models;
 
 namespace ChickenTinder.Server.Managers
 {
@@ -11,7 +12,7 @@ namespace ChickenTinder.Server.Managers
             _httpClient = clientFactory.CreateClient("YelpClient");
         }
 
-        public async Task<List<Business>?> GetRestaurants(string location)
+        public async Task<List<Restaurant>?> GetRestaurants(string location)
         {
             return (await _httpClient.GetFromJsonAsync<YelpResponce>("search?location=" + location))?.Businesses;
         }

@@ -14,19 +14,42 @@ namespace ChickenTinder.Server.Managers
             _reastaurantManager = restaurantManager;
         }
 
-        public Room? JoinRoom()
+        public async Task<DiningRoom?> CreateRoom(User user)
         {
+            var locations = await _reastaurantManager.GetRestaurants(user.Location);
+            if (locations is not null)
+            {
+                DiningRoom room = new(user, locations)
+                {
+                    ID = new Random().Next(0, 99999)
+                };
 
+                if (!_rooms.ContainsKey(room.ID))
+                {
+                    _rooms.Add(room.ID, room);
+                    return room;
+                }
+            }
+
+            return null;
         }
 
-        public Room? CreateRoom()
+        public DiningRoom? JoinRoom(User user, int roomId)
         {
-
+            if (_rooms.TryGetValue(roomId, out var room))
+            {
+                room.Join(user);
+                return room;
+            }
+            return null;
         }
 
-        public void LeaveRoom()
+        public void LeaveRoom(User user, int roomId)
         {
-
+            if (_rooms.TryGetValue(roomId, out var room))
+            {
+                room.Leave(user);
+            }
         }
     }
 }

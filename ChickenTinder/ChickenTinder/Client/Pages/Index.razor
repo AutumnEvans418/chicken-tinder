@@ -1,5 +1,9 @@
 ﻿@page "/"
+@using ChickenTinder.Client.Data
 @inject NavigationManager nav
+@inject ServerConnection _server;
+
+
 <div class="center-all">
     <img src="/icon-192.png" />
 </div>
@@ -17,6 +21,9 @@
 
 </div>
 
+<SwipeList>
+
+</SwipeList>
 
 @code {
     private string? _code;

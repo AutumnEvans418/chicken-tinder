@@ -1,5 +1,4 @@
 ﻿using ChickenTinder.Server.Managers;
-using ChickenTinder.Shared.Core;
 using ChickenTinder.Shared.Models;
 
 namespace ChickenTinder.Server.Hubs
@@ -8,20 +7,21 @@ namespace ChickenTinder.Server.Hubs
     {
         private readonly RoomManager _roomManager;
 
-
         public TinderHub(RoomManager roomManager)
         {
             _roomManager = roomManager;
         }
 
-        public async Task AddRoom(User user)
-        {
 
+
+        public async Task<DiningRoom?> CreateRoom(User user)
+        {
+            return await _roomManager.CreateRoom(user);
         }
 
-        public async Task JoinRoom(int roomId)
+        public DiningRoom? JoinRoom(User user, int roomId)
         {
-
+            return _roomManager.JoinRoom(user, roomId);
         }
 
         public async Task UpdateRestaurant(Match match)
@@ -30,6 +30,11 @@ namespace ChickenTinder.Server.Hubs
         }
 
         public async Task Start(int roomId)
+        {
+
+        }
+
+        public async Task Like(int roomId)
         {
 
         }
