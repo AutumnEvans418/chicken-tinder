@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using ChickenTinder.Client.Data
 @inject NavigationManager nav
+
 @inject ServerConnection _server;
 
 
@@ -21,14 +22,7 @@
 
 </div>
 
-
 @code {
-
-    protected override async Task OnInitializedAsync()
-    {
-        //await _server.CreateRoom();
-    }
-
     private string? _code;
     public string? Code
     {

@@ -6,7 +6,7 @@ namespace ChickenTinder.Server.Managers
     {
         private readonly RestaurantManager _reastaurantManager;
 
-        private readonly Dictionary<int, DinningRoom> _rooms = new();
+        private readonly Dictionary<int, DiningRoom> _rooms = new();
 
 
         public RoomManager(RestaurantManager restaurantManager)
@@ -14,15 +14,26 @@ namespace ChickenTinder.Server.Managers
             _reastaurantManager = restaurantManager;
         }
 
-        public DinningRoom? CreateRoom(User user)
+        public async Task<DiningRoom?> CreateRoom(User user)
         {
-            var locations = _reastaurantManager.GetRestaurants(user.Location);
-            DinningRoom room = new(new Random().Next(0,99999), locations);
+            var locations = await _reastaurantManager.GetRestaurants(user.Location);
+            if (locations is not null)
+            {
+                DiningRoom room = new(user, locations)
+                {
+                    ID = new Random().Next(0, 99999)
+                };
 
+                if (!_rooms.ContainsKey(room.ID))
+                {
+                    return room;
+                }
+            }
 
+            return null;
         }
 
-        public DinningRoom? JoinRoom()
+        public DiningRoom? JoinRoom()
         {
             return null;
         }

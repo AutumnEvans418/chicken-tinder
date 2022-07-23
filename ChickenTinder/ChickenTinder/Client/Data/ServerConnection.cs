@@ -6,7 +6,7 @@ namespace ChickenTinder.Client.Data
 {
     public class ServerConnection
     {
-        private DinningRoom? _room = null;
+        private DiningRoom? _room = null;
         private User? _user;
 
         private readonly HubConnection _hubConnection;
@@ -17,7 +17,8 @@ namespace ChickenTinder.Client.Data
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tenderhub"))
                                 .Build();
 
-            _ = Connect().ContinueWith(x=> CreateRoom());
+            _ = Connect();
+           // _ = Connect().ContinueWith(x => CreateRoom());
         }
 
         public bool HasRoom => _room is not null;
@@ -25,14 +26,19 @@ namespace ChickenTinder.Client.Data
         public event Action? OnStart;
         public event Action<string>? OnMatch; // RestaurantId
 
-        public async Task Connect()
+        /// <summary>
+        /// Connect the SignalR Service and create the User
+        /// </summary>
+        /// <param name="location"></param>
+        /// <returns></returns>
+        public async Task Connect(string location = "Kansas City")
         {
             await _hubConnection.StartAsync();
 
             _user = new()
             {
                 Name = "Tommy",
-                Location = "Kansas city",
+                Location = location,
                 SignalRConnection = _hubConnection.ConnectionId ?? "NA"
             };
         }
@@ -41,8 +47,12 @@ namespace ChickenTinder.Client.Data
         {
             if (_hubConnection is not null)
             {
-                _room = await _hubConnection.InvokeAsync<DinningRoom>("CreateRoom", _user);
+                _room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
             }
+
+            Console.WriteLine("Room Created");
+
+            Console.WriteLine(_room.ToJson());
         }
 
         public async Task JoinRoom(int roomId)
