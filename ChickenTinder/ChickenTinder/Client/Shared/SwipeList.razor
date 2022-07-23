@@ -1,6 +1,7 @@
 ﻿@using ChickenTinder.Client.Data
 @using ChickenTinder.Shared.Models
 @inject ServerConnection server
+
 <div class="tinder">
     <div class="tinder--status">
         <i class="fa-solid fa-star"></i>
@@ -14,27 +15,7 @@
         @foreach (var item in Restaurants)
         {
             <div class="tinder--card">
-                <h3 class="center-all">@item.Name</h3>
-                <img class="center-all" src="@item.Image_Url" />
-                @*<table>
-            <tr>
-            <td>@item.Review_Count Reviews</td>
-            <td>
-            @for (int i = 0; i < 5; i++)
-            {
-            @if (Math.Round(@item.Rating, 0) >= i)
-            {
-            <i class="fa-solid fa-star"></i>
-            }
-            else
-            {
-            <i class="fa-solid fa-star checked"></i>
-            }
-            }
-            </td>
-
-            </tr>
-            </table>*@
+               <Card Restaurant="@item"></Card>
             </div>
         }
     </div>
@@ -83,7 +64,7 @@
                 SwipeDirection.Up => 3,
                 _ => throw new Exception(),
             };
-            await server.Like(restaurant.ID, votes);
+            //await server.Like(restaurant.ID, votes);
         }
 
         if (action == SwipeDirection.Left)
