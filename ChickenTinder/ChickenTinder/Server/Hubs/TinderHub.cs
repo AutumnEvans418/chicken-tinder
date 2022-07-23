@@ -1,22 +1,19 @@
-﻿using ChickenTinder.Server.Managers;
-using ChickenTinder.Shared.Models;
+﻿namespace ChickenTinder.Server.Hubs;
 
-namespace ChickenTinder.Server.Hubs
+public class TinderHub : Hub
 {
-    public class TinderHub : Hub
+    private readonly RoomService _roomManager;
+
+    public TinderHub(RoomService roomManager)
     {
-        private readonly RoomManager _roomManager;
-
-        public TinderHub(RoomManager roomManager)
-        {
-            _roomManager = roomManager;
-        }
+        _roomManager = roomManager;
+    }
 
 
-        public async Task<DiningRoom?> CreateRoom(User user)
-        {
-            return await _roomManager.CreateRoom(user);
-        }
+    public async Task<DiningRoom?> CreateRoom(User user)
+    {
+        return await _roomManager.CreateRoom(user);
+    }
 
         public async Task<DiningRoom?> JoinRoom(int roomId, User user)
         {
@@ -24,18 +21,18 @@ namespace ChickenTinder.Server.Hubs
             return _roomManager.JoinRoom(user, roomId);
         }
 
-        public async Task Start(int roomId)
-        {
-            await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnStart");
-        }
+    public async Task Start(int roomId)
+    {
+        await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnStart");
+    }
 
-        public async Task Like(int roomId, string RestaurantId, int votes)
+    public async Task Like(int roomId, string RestaurantId, int votes)
+    {
+        if (_roomManager.Vote(roomId, Context.ConnectionId, RestaurantId, votes))
         {
-            if (_roomManager.Vote(roomId, Context.ConnectionId, RestaurantId, votes))
-            {
-                await InvokeMatch(roomId, RestaurantId);
-            }
+            await InvokeMatch(roomId, RestaurantId);
         }
+    }
 
         public async Task LeaveRoom(User user, int roomId)
         {
@@ -43,10 +40,10 @@ namespace ChickenTinder.Server.Hubs
             await InvokeLeave(roomId, user);
         }
 
-        private async Task InvokeMatch(int roomId, string RestaurantId)
-        {
-            await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnMatch", RestaurantId);
-        }
+    private async Task InvokeMatch(int roomId, string RestaurantId)
+    {
+        await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnMatch", RestaurantId);
+    }
 
         private async Task InvokeJoin(int roomId, User userId)
         {
