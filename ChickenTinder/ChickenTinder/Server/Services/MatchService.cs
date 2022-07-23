@@ -4,40 +4,24 @@ namespace ChickenTinder.Server.Services
 {
     public class MatchService
     {
-        List<Match> _matches = new();
-
-        public void AddLike(Match match, int userCount)
+        public bool CheckForMatch(DiningRoom room, Match match)
         {
-            if (match.Restaurant?.ID == null) return;
+            if (match.Restaurant?.ID == null) throw new ArgumentException("Restaurant not valid");
 
-            if (_matches.Count == 0 || !_matches.Any(m => m.Restaurant?.ID == match.Restaurant.ID))
+            bool matchFound = false;
+            if (room.Matches.Count == 0 || !room.Matches.Any(m => m.Restaurant?.ID == match.Restaurant.ID))
             {
-                _matches.Add(match);
-            } else
+                room.Matches.Add(match);
+                matchFound = false;
+            }
+            else
             {
-                if (_matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID).Count() == userCount)
+                if (room.Matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID).Count() == room.Users.Count)
                 {
-
+                    matchFound = true;
                 }
             }
+            return matchFound;
         }
-
-        //public Match? CheckForMatch(Match match)
-        //{
-        //    if (match.Restaurant?.ID == null) return null;
-
-        //    if (_matches.Count == 0 || !_matches.Any(m => m.Restaurant?.ID == match.Restaurant.ID))
-        //    {
-        //        _matches.Add(match);
-        //        return null;
-        //    }
-        //    else
-        //    {
-        //        if (_matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID).Count() == userCount)
-        //        {
-
-        //        }
-        //    }
-        //}
     }
 }
