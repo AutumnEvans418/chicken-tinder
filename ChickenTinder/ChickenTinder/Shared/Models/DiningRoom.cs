@@ -14,7 +14,7 @@ namespace ChickenTinder.Shared.Models
             Host = host;
             Users = new() { { host } };
             Restaurants = restaurants;
-            Matches = new List<Match>();
+            Matches = new List<Match>();            
         }
 
         public User Host { get; set; }
@@ -22,6 +22,7 @@ namespace ChickenTinder.Shared.Models
         public int ID { get; set; }
         public List<Restaurant> Restaurants { get; set; }
         public List<Match> Matches { get; set; }
+        public Restaurant WinningRestaurant { get; set; }
 
         public Restaurant? GetRestaurant(string Id)
         {
