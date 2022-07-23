@@ -30,15 +30,16 @@
     [Parameter]
     public int RoomID { get; set; }
 
-    private DiningRoom Room { get; set; }
+    private DiningRoom? Room { get; set; }
     private string RestaurantName { get; set; } = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        if (ServerConnection.Room != null)
+        Room = await ServerConnection.GetRoom(RoomID);
+        if (Room != null)
         {
             Room = ServerConnection.Room;
-            //RestaurantName = Room.WinningRestaurant == null ? "" : Room.WinningRestaurant
-        }        
+            RestaurantName = Room?.WinningRestaurant?.Name == null ? "" : Room.WinningRestaurant.Name;
+        }
     }
 }
