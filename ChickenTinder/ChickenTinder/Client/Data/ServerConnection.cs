@@ -16,12 +16,11 @@ namespace ChickenTinder.Client.Data
             _hubConnection = new HubConnectionBuilder()
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tenderhub"))
                                 .Build();
-
-            _ = Connect();
-           // _ = Connect().ContinueWith(x => CreateRoom());
         }
 
-        public bool HasRoom => _room is not null;
+        public bool HasRoom => Room is not null;
+
+        public DiningRoom? Room { get => _room; set => _room = value; }
 
         public event Action? OnStart;
         public event Action<string>? OnMatch; // RestaurantId
@@ -31,28 +30,31 @@ namespace ChickenTinder.Client.Data
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        public async Task Connect(string location = "Kansas City")
+        private async Task Connect(string location = "Kansas City")
         {
+            if (_hubConnection.State != HubConnectionState.Disconnected)
+                return;
             await _hubConnection.StartAsync();
-
-            _user = new()
-            {
-                Name = "Tommy",
-                Location = location,
-                SignalRConnection = _hubConnection.ConnectionId ?? "NA"
-            };
+            if (_user == null)
+                _user = new()
+                {
+                    Name = "Tommy",
+                    Location = location,
+                    SignalRConnection = _hubConnection.ConnectionId ?? "NA"
+                };
         }
 
         public async Task CreateRoom()
         {
+            await Connect();
             if (_hubConnection is not null)
             {
-                _room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
+                Room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
             }
 
             Console.WriteLine("Room Created");
 
-            Console.WriteLine(_room.ToJson());
+            Console.WriteLine(Room.ToJson());
         }
 
         public async Task JoinRoom(int roomId)

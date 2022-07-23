@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChickenTinder.Server", "ChickenTinder\Server\ChickenTinder.Server.csproj", "{FC3993B3-4408-4F2D-B53B-6DC62DD5CD54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChickenTinder.Server", "ChickenTinder\Server\ChickenTinder.Server.csproj", "{FC3993B3-4408-4F2D-B53B-6DC62DD5CD54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChickenTinder.Client", "ChickenTinder\Client\ChickenTinder.Client.csproj", "{40EF5A6E-648C-410E-971D-A83A475C750E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChickenTinder.Client", "ChickenTinder\Client\ChickenTinder.Client.csproj", "{40EF5A6E-648C-410E-971D-A83A475C750E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChickenTinder.Shared", "ChickenTinder\Shared\ChickenTinder.Shared.csproj", "{A515A06A-3D98-42DA-A37F-F9E9E6C25C31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChickenTinder.Shared", "ChickenTinder\Shared\ChickenTinder.Shared.csproj", "{A515A06A-3D98-42DA-A37F-F9E9E6C25C31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

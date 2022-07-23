@@ -20,4 +20,12 @@ namespace ChickenTinder.Shared.Models
         No,
         Yes
     }
+
+    public enum SwipeDirection
+    {
+        Left = 2,
+        Up = 8,
+        Right = 4,
+        Down = 16,
+    }
 }

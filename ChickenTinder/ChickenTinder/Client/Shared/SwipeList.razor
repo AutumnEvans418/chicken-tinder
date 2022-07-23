@@ -1,0 +1,98 @@
+﻿@using ChickenTinder.Client.Data
+@using ChickenTinder.Shared.Models
+@inject ServerConnection server
+<div class="tinder">
+    <div class="tinder--status">
+        <i class="fa-solid fa-star"></i>
+        <i class="fa-solid fa-thumbs-up"></i>
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+        <i class="fa-solid fa-thumbs-down"></i>
+    </div>
+
+    <div class="tinder--cards">
+
+        @foreach (var item in Restaurants)
+        {
+            <div class="tinder--card">
+                <h3 class="center-all">@item.Name</h3>
+                <img class="center-all" src="@item.ImageUrl" />
+                @*<table>
+                    <tr>
+                        <td>@item.Review_Count Reviews</td>
+                        <td>
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                @if (Math.Round(@item.Rating, 0) >= i)
+                                {
+                                    <i class="fa-solid fa-star"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-solid fa-star checked"></i>
+                                }
+                            }
+                        </td>
+
+                    </tr>
+                </table>*@
+            </div>
+        }
+        <div class="tinder--card">
+            <img src="https://placeimg.com/600/300/people">
+            <h3>Demo card 1</h3>
+            <p>This is a demo for Tinder like swipe cards</p>
+        </div>
+        <div class="tinder--card">
+            <img src="https://placeimg.com/600/300/animals">
+            <h3>Demo card 2</h3>
+            <p>This is a demo for Tinder like swipe cards</p>
+        </div>
+        <div class="tinder--card">
+            <img src="https://placeimg.com/600/300/nature">
+            <h3>Demo card 3</h3>
+            <p>This is a demo for Tinder like swipe cards</p>
+        </div>
+        <div class="tinder--card">
+            <img src="https://placeimg.com/600/300/tech">
+            <h3>Demo card 4</h3>
+            <p>This is a demo for Tinder like swipe cards</p>
+        </div>
+        <div class="tinder--card">
+            <img src="https://placeimg.com/600/300/arch">
+            <h3>Demo card 5</h3>
+            <p>This is a demo for Tinder like swipe cards</p>
+        </div>
+    </div>
+
+    <div class="tinder--buttons">
+        <button id="love">      <i class="fa-solid fa-star"></i></button>
+        <button id="like">      <i class="fa-solid fa-thumbs-up"></i></button>
+        <button id="dislike">   <i class="fa-solid fa-arrow-rotate-left"></i></button>
+        <button id="nope">      <i class="fa-solid fa-thumbs-down"></i></button>
+    </div>
+</div>
+
+@inject IJSRuntime runtime
+@code {
+
+    public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
+    private SwipeJsInterop interop;
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            interop = new SwipeJsInterop(runtime);
+            interop.OnSwiped += OnSwipe;
+            if (server.HasRoom != true)
+                await server.CreateRoom();
+            Restaurants = server.Room?.Restaurants ?? new List<Restaurant>();
+            StateHasChanged();
+        }
+        await interop.Start();
+    }
+
+    public void OnSwipe(object? sender, SwipeDirection action)
+    {
+
+    }
+}
