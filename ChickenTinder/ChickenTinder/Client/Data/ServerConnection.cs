@@ -16,6 +16,31 @@ namespace ChickenTinder.Client.Data
             _hubConnection = new HubConnectionBuilder()
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tenderhub"))
                                 .Build();
+
+
+            _hubConnection.On("OnStart", () =>
+            {
+                OnStart?.Invoke();
+            });
+
+            _hubConnection.On<User>("OnJoin", (x) =>
+            {
+                OnJoin?.Invoke(x);
+            });
+
+            _hubConnection.On<User>("OnLeave", (x) =>
+            {
+                OnJoin?.Invoke(x);
+            });
+
+            _hubConnection.On<string>("OnMatch", (x) =>
+            {
+                OnMatch?.Invoke(x);
+            });
+
+
+            _ = Connect();
+           // _ = Connect().ContinueWith(x => CreateRoom());
         }
 
         public bool HasRoom => Room is not null;
@@ -23,12 +48,15 @@ namespace ChickenTinder.Client.Data
         public DiningRoom? Room { get => _room; set => _room = value; }
 
         public event Action? OnStart;
-        public event Action<string>? OnMatch; // RestaurantId
+        public event Action<string>? OnMatch; // RestaurantId of the Match
+        public event Action<User>? OnJoin;
+        public event Action<User>? OnLeave;
+
 
         /// <summary>
         /// Connect the SignalR Service and create the User
         /// </summary>
-        /// <param name="location"></param>
+        /// <param name="location">The location of the User. Zip or City name</param>
         /// <returns></returns>
         private async Task Connect(string location = "Kansas City")
         {
@@ -52,19 +80,23 @@ namespace ChickenTinder.Client.Data
                 Room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
             }
 
-            Console.WriteLine("Room Created");
-
-            Console.WriteLine(Room.ToJson());
+            Console.WriteLine(_room.ToJson());
         }
 
         public async Task JoinRoom(int roomId)
         {
-
+            if (_hubConnection is not null)
+            {
+                _room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, _user);
+            }
         }
 
         public async Task Like(string RestaurantId, int votes)
         {
-
+            if (_hubConnection is not null && _room is not null)
+            {
+                _room = await _hubConnection.InvokeAsync<DiningRoom>("Like", _room?.ID, RestaurantId, votes);
+            }
         }
     }
 }

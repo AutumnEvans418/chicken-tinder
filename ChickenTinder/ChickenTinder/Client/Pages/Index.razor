@@ -1,7 +1,6 @@
 ﻿@page "/"
 @using ChickenTinder.Client.Data
 @inject NavigationManager nav
-
 @inject ServerConnection _server;
 
 
@@ -48,6 +47,6 @@
     public void Join()
     {
         //create the room...
-      //  nav.NavigateTo("/room");
+        nav.NavigateTo("/room");
     }
 }
