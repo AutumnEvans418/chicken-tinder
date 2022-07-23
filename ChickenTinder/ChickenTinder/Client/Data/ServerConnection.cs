@@ -43,7 +43,8 @@ namespace ChickenTinder.Client.Data
            // _ = Connect().ContinueWith(x => CreateRoom());
         }
 
-        public bool HasRoom => Room is not null;
+        public bool HasRoom => _room is not null;
+        public DiningRoom? Room => _room;
 
         public DiningRoom? Room { get => _room; set => _room = value; }
 

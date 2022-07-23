@@ -26,6 +26,7 @@ namespace ChickenTinder.Server.Managers
 
                 if (!_rooms.ContainsKey(room.ID))
                 {
+                    _rooms.Add(room.ID, room);
                     return room;
                 }
             }
@@ -33,14 +34,22 @@ namespace ChickenTinder.Server.Managers
             return null;
         }
 
-        public DiningRoom? JoinRoom()
+        public DiningRoom? JoinRoom(User user, int roomId)
         {
+            if (_rooms.TryGetValue(roomId, out var room))
+            {
+                room.Join(user);
+                return room;
+            }
             return null;
         }
 
-        public void LeaveRoom()
+        public void LeaveRoom(User user, int roomId)
         {
-
+            if (_rooms.TryGetValue(roomId, out var room))
+            {
+                room.Leave(user);
+            }
         }
     }
 }

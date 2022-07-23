@@ -23,6 +23,14 @@ namespace ChickenTinder.Shared.Models
         public List<Restaurant> Restaurants { get; set; }
         public List<Match> Matches { get; set; }
         
+        public void Join(User user)
+        {
+            Users.Add(user);
+        }
+        public void Leave(User user)
+        {
+            Users.Remove(user);
+        }
 
         public string ToJson()
         {
