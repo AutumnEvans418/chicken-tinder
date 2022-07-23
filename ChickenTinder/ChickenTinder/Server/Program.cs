@@ -1,3 +1,6 @@
+using ChickenTinder.Server.Hubs;
+using ChickenTinder.Server.Managers;
+using ChickenTinder.Shared.Managers;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,9 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddSignalR();
+
+builder.Services.AddSingleton<CodeManager>();
+builder.Services.AddSingleton<RestaurantManager>();
+
+builder.Services.AddSignalR();
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
 
 var app = builder.Build();
-
+app.UseResponseCompression();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -28,9 +42,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-
 app.MapRazorPages();
 app.MapControllers();
+app.MapHub<TinderHub>("/tenderhub");
 app.MapFallbackToFile("index.html");
 
 app.Run();
