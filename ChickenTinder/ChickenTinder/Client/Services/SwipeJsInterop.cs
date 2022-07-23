@@ -26,6 +26,12 @@ namespace ChickenTinder.Client
         {
             await jsRuntime.InvokeVoidAsync("Swipe.start", dotNetRef);
         }
+
+        public async Task InitCards()
+        {
+            await jsRuntime.InvokeVoidAsync("Swipe.initCards");
+        }
+
         public event EventHandler<SwipeDirection> OnSwiped;
         [JSInvokable]
         public void Swipe(int direction)

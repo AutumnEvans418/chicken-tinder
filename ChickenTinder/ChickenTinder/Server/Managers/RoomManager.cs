@@ -1,21 +1,26 @@
-﻿using ChickenTinder.Shared.Models;
+﻿using ChickenTinder.Server.Services;
+using ChickenTinder.Shared.Models;
 
 namespace ChickenTinder.Server.Managers
 {
     public class RoomManager
     {
         private readonly RestaurantManager _reastaurantManager;
+        private readonly MatchService _matchService;
 
         private readonly Dictionary<int, DiningRoom> _rooms = new();
 
 
-        public RoomManager(RestaurantManager restaurantManager)
+        public RoomManager(RestaurantManager restaurantManager, MatchService match)
         {
-            _reastaurantManager = restaurantManager;
+            _matchService = match;
+           _reastaurantManager = restaurantManager;
         }
 
         public async Task<DiningRoom?> CreateRoom(User user)
         {
+            if (user is null) return null;
+
             var locations = await _reastaurantManager.GetRestaurants(user.Location);
             if (locations is not null)
             {
@@ -50,6 +55,40 @@ namespace ChickenTinder.Server.Managers
             {
                 room.Leave(user);
             }
+        }
+
+        public bool Vote(int roomId, string userId, string RestaurantId, int votes)
+        {
+            if (_rooms.TryGetValue(roomId, out var room))
+            {
+                if (room.UserExist(userId))
+                {
+                    var restaurant = room.GetRestaurant(RestaurantId);
+                    var user = room.GetUser(userId);
+
+                    Match match = new()
+                    {
+                        User = user,
+                        Vote = votes,
+                        Restaurant = restaurant,
+                    };
+
+                    if (_matchService.CheckForMatch(room, match))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public List<string> GetUserIds(int roomId)
+        {
+            if (_rooms.TryGetValue(roomId, out var room))
+                return room.Users.Keys.ToList();
+            else
+                return new();
         }
     }
 }

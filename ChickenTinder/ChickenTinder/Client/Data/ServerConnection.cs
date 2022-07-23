@@ -1,10 +1,11 @@
 ﻿using ChickenTinder.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.JSInterop;
 
 namespace ChickenTinder.Client.Data
 {
-    public class ServerConnection
+    public class ServerConnection : IAsyncDisposable
     {
         private DiningRoom? _room = null;
         private User? _user;
@@ -14,7 +15,7 @@ namespace ChickenTinder.Client.Data
         public ServerConnection(NavigationManager NavigationManager)
         {
             _hubConnection = new HubConnectionBuilder()
-                                .WithUrl(NavigationManager.ToAbsoluteUri("/tenderhub"))
+                                .WithUrl(NavigationManager.ToAbsoluteUri("/tinderhub"))
                                 .Build();
 
 
@@ -35,6 +36,7 @@ namespace ChickenTinder.Client.Data
 
             _hubConnection.On<string>("OnMatch", (x) =>
             {
+                Console.WriteLine(x + "   is a match !!!!!!!");
                 OnMatch?.Invoke(x);
             });
         }
@@ -53,29 +55,34 @@ namespace ChickenTinder.Client.Data
         /// </summary>
         /// <param name="location">The location of the User. Zip or City name</param>
         /// <returns></returns>
-        private async Task Connect(string location = "Kansas City")
+        private async Task Connect()
         {
-            if (_hubConnection.State != HubConnectionState.Disconnected)
+            if (_hubConnection.State is not HubConnectionState.Disconnected)
                 return;
+
             await _hubConnection.StartAsync();
-            if (_user == null)
+
+            if (_user is null)
                 _user = new()
                 {
                     Name = "Tommy",
-                    Location = location,
                     SignalRConnection = _hubConnection.ConnectionId ?? "NA"
                 };
         }
 
-        public async Task CreateRoom()
+        public async Task CreateRoom(string location = "Kansas City")
         {
             await Connect();
+
+            _user!.Location = location;
+
             if (_hubConnection is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
             }
 
-            Console.WriteLine(_room.ToJson());
+            // Temp write it to dev tools for debugging
+            //Console.WriteLine(_room!.ToJson());
         }
 
         public async Task JoinRoom(int roomId)
@@ -86,12 +93,28 @@ namespace ChickenTinder.Client.Data
             }
         }
 
+        public async Task LeaveRoom()
+        {
+            if (_hubConnection is not null && HasRoom)
+            {
+                _room = await _hubConnection.InvokeAsync<DiningRoom>("LeaveRoom", _room!.ID, _user);
+            }
+        }
+
         public async Task Like(string RestaurantId, int votes)
         {
             if (_hubConnection is not null && _room is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("Like", _room?.ID, RestaurantId, votes);
             }
+        }
+
+
+
+        public async ValueTask DisposeAsync()
+        {
+            await LeaveRoom();
+            await _hubConnection.DisposeAsync();
         }
     }
 }

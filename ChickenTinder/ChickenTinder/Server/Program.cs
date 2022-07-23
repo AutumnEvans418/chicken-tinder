@@ -1,5 +1,6 @@
 using ChickenTinder.Server.Hubs;
 using ChickenTinder.Server.Managers;
+using ChickenTinder.Server.Services;
 using ChickenTinder.Shared.Managers;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.Net.Http.Headers;
@@ -15,12 +16,12 @@ builder.Services.AddSignalR();
 builder.Services.AddHttpClient("YelpClient", x=>
 {
     x.BaseAddress = new Uri("https://api.yelp.com/v3/businesses/");
-
     x.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "ffW4qTtxA6sIEDs9oDQuWwBho-X_cLugkW-oUwn1fF-UI1ADd8UfySOq-29IWT1AnZhAJGxzkh489AOPV7wLQr40zgQe2cq-AkriRGqrFXqbox27-_9MjTWpBanaYnYx");
 });
 
 builder.Services.AddSingleton<CodeManager>();
 builder.Services.AddSingleton<RoomManager>();
+builder.Services.AddSingleton<MatchService>();
 builder.Services.AddSingleton<RestaurantManager>();
 
 builder.Services.AddSignalR();
@@ -53,7 +54,7 @@ app.UseRouting();
 
 app.MapRazorPages();
 app.MapControllers();
-app.MapHub<TinderHub>("/tenderhub");
+app.MapHub<TinderHub>("/tinderhub");
 app.MapFallbackToFile("index.html");
 
 app.Run();
