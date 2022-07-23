@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChickenTinder.Shared.Core
+namespace ChickenTinder.Shared.Models
 {
-    public class User
+    public class Room
     {
     }
 }
