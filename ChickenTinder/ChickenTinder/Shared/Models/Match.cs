@@ -8,9 +8,9 @@ namespace ChickenTinder.Shared.Models
 {
     public class Match
     {
-        public User User { get; set; }
+        public User ?User { get; set; }
         public UserAction Action { get; set; }
-        public Restaurant Restaurant { get; set; }
+        public Restaurant? Restaurant { get; set; }
         public int Vote { get; set; }
     }
 }
