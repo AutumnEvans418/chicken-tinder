@@ -15,53 +15,28 @@
         {
             <div class="tinder--card">
                 <h3 class="center-all">@item.Name</h3>
-                <img class="center-all" src="@item.ImageUrl" />
+                <img class="center-all" src="@item.Image_Url" />
                 @*<table>
-                    <tr>
-                        <td>@item.Review_Count Reviews</td>
-                        <td>
-                            @for (int i = 0; i < 5; i++)
-                            {
-                                @if (Math.Round(@item.Rating, 0) >= i)
-                                {
-                                    <i class="fa-solid fa-star"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa-solid fa-star checked"></i>
-                                }
-                            }
-                        </td>
+            <tr>
+            <td>@item.Review_Count Reviews</td>
+            <td>
+            @for (int i = 0; i < 5; i++)
+            {
+            @if (Math.Round(@item.Rating, 0) >= i)
+            {
+            <i class="fa-solid fa-star"></i>
+            }
+            else
+            {
+            <i class="fa-solid fa-star checked"></i>
+            }
+            }
+            </td>
 
-                    </tr>
-                </table>*@
+            </tr>
+            </table>*@
             </div>
         }
-        <div class="tinder--card">
-            <img src="https://placeimg.com/600/300/people">
-            <h3>Demo card 1</h3>
-            <p>This is a demo for Tinder like swipe cards</p>
-        </div>
-        <div class="tinder--card">
-            <img src="https://placeimg.com/600/300/animals">
-            <h3>Demo card 2</h3>
-            <p>This is a demo for Tinder like swipe cards</p>
-        </div>
-        <div class="tinder--card">
-            <img src="https://placeimg.com/600/300/nature">
-            <h3>Demo card 3</h3>
-            <p>This is a demo for Tinder like swipe cards</p>
-        </div>
-        <div class="tinder--card">
-            <img src="https://placeimg.com/600/300/tech">
-            <h3>Demo card 4</h3>
-            <p>This is a demo for Tinder like swipe cards</p>
-        </div>
-        <div class="tinder--card">
-            <img src="https://placeimg.com/600/300/arch">
-            <h3>Demo card 5</h3>
-            <p>This is a demo for Tinder like swipe cards</p>
-        </div>
     </div>
 
     <div class="tinder--buttons">
@@ -85,14 +60,36 @@
             interop.OnSwiped += OnSwipe;
             if (server.HasRoom != true)
                 await server.CreateRoom();
-            Restaurants = server.Room?.Restaurants ?? new List<Restaurant>();
+            Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
             StateHasChanged();
         }
         await interop.Start();
     }
 
-    public void OnSwipe(object? sender, SwipeDirection action)
-    {
 
+    public async void OnSwipe(object? sender, SwipeDirection action)
+    {
+        Console.WriteLine(action);
+        var restaurant = Restaurants.First();
+
+        Restaurants.Remove(restaurant);
+
+        if (action != SwipeDirection.Down)
+        {
+            var votes = action switch
+            {
+                SwipeDirection.Left => 1,
+                SwipeDirection.Right => 2,
+                SwipeDirection.Up => 3,
+                _ => throw new Exception(),
+            };
+            await server.Like(restaurant.ID, votes);
+        }
+
+        if (action == SwipeDirection.Left)
+        {
+            Restaurants.Add(restaurant);
+            StateHasChanged();
+        }
     }
 }
