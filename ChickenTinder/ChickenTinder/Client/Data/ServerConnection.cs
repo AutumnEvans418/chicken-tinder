@@ -104,7 +104,7 @@ namespace ChickenTinder.Client.Data
 
             if (_hubConnection is not null && HasRoom)
             {
-                _room = await _hubConnection.InvokeAsync<DiningRoom>("LeaveRoom", _room!.ID, _user);
+                await _hubConnection.InvokeAsync("LeaveRoom", _room!.ID, _user);
             }
         }
 
@@ -114,7 +114,7 @@ namespace ChickenTinder.Client.Data
 
             if (_hubConnection is not null && _room is not null)
             {
-                _room = await _hubConnection.InvokeAsync<DiningRoom>("Like", _room?.ID, RestaurantId, votes);
+                await _hubConnection.InvokeAsync("Like", _room?.ID, RestaurantId, votes);
             }
         }
 
