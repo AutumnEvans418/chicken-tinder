@@ -46,8 +46,6 @@ namespace ChickenTinder.Client.Data
         public bool HasRoom => _room is not null;
         public DiningRoom? Room => _room;
 
-        public DiningRoom? Room { get => _room; set => _room = value; }
-
         public event Action? OnStart;
         public event Action<string>? OnMatch; // RestaurantId of the Match
         public event Action<User>? OnJoin;
@@ -78,7 +76,7 @@ namespace ChickenTinder.Client.Data
             await Connect();
             if (_hubConnection is not null)
             {
-                Room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
+                _room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
             }
 
             Console.WriteLine(_room.ToJson());
