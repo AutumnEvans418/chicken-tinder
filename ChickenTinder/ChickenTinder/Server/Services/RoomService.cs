@@ -14,6 +14,15 @@ public class RoomService
         _reastaurantService = restaurantService;
     }
 
+    public DiningRoom? GetRoom(int Id)
+    {
+        if (_rooms.TryGetValue(Id, out var room))
+        {
+            return room;
+        }
+        return null;
+    }
+
     public async Task<DiningRoom?> CreateRoom(User user)
     {
         if (user is null) return null;

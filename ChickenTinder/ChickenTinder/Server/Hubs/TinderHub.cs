@@ -3,9 +3,11 @@
 public class TinderHub : Hub
 {
     private readonly RoomService _roomManager;
+    private readonly RestaurantService _restaurantService;
 
-    public TinderHub(RoomService roomManager)
+    public TinderHub(RoomService roomManager, RestaurantService restaurantService)
     {
+        _restaurantService = restaurantService;
         _roomManager = roomManager;
     }
 
@@ -39,6 +41,18 @@ public class TinderHub : Hub
         _roomManager.LeaveRoom(user, roomId);
         await InvokeLeave(roomId, user);
     }
+
+    public async Task<Restaurant?> GetRestaurant(string id)
+    {
+        return await _restaurantService.GetRestaurant(id);
+    }
+
+    public DiningRoom? GetRoom(int id)
+    {
+        return  _roomManager.GetRoom(id);
+    }
+
+
 
     private async Task InvokeMatch(int roomId, string RestaurantId)
     {
