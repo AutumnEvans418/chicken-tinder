@@ -128,6 +128,17 @@ namespace ChickenTinder.Client.Data
             }
         }
 
+        public async Task<Restaurant?> GetRestaurant(string id)
+        {
+            return await _hubConnection.InvokeAsync<Restaurant>("GetRestaurant", id);
+        }
+
+        public async Task<DiningRoom?> GetRoom(int id)
+        {
+            return await _hubConnection.InvokeAsync<DiningRoom>("GetRoom", id);
+
+        }
+
 
         public async ValueTask DisposeAsync()
         {
