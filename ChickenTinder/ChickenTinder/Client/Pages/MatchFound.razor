@@ -1,4 +1,4 @@
-﻿@page "/match/{roomID:int}"
+﻿@page "/match/{roomid:int}"
 @using ChickenTinder.Client.Data
 @using ChickenTinder.Shared.Models
 @inject ServerConnection ServerConnection
@@ -12,7 +12,7 @@
         <div class="col-8">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Let's Go to @Room!</h5>
+                    <h5 class="card-title">Let's Go to @RestaurantName!</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Great choice! Now let's do this!</h6>
                     <p class="card-text text-center">
                         <i class="fa-solid fa-burger fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
@@ -35,7 +35,7 @@
         if (ServerConnection.Room != null)
         {
             Room = ServerConnection.Room;
-            
+            //RestaurantName = Room.WinningRestaurant == null ? "" : Room.WinningRestaurant
         }        
     }
 }

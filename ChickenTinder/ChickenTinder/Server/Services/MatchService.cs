@@ -19,6 +19,7 @@ public class MatchService
             if (room.Matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID).Count() == room.Users.Count)
             {
                 matchFound = true;
+                room.WinningRestaurant = match.Restaurant;
             }
         }
         return matchFound;
