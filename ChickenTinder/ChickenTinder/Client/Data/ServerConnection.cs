@@ -44,6 +44,7 @@ namespace ChickenTinder.Client.Data
         }
 
         public bool HasRoom => _room is not null;
+        public DiningRoom? Room => _room;
 
         public event Action? OnStart;
         public event Action<string>? OnMatch; // RestaurantId of the Match
