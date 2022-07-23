@@ -1,6 +1,9 @@
-﻿@page "/swipe"
+﻿@page "/swipe/{Id}/join/{UserId}"
 <h3>Swipe</h3>
 
 @code {
-
+    [Parameter]
+    public int UserId { get; set; }
+    [Parameter]
+    public int Id { get; set; }
 }
