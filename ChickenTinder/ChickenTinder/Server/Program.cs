@@ -1,5 +1,6 @@
 using ChickenTinder.Server.Hubs;
 using ChickenTinder.Server.Managers;
+using ChickenTinder.Server.Services;
 using ChickenTinder.Shared.Managers;
 using Microsoft.AspNetCore.ResponseCompression;
 using System.Net.Http.Headers;
@@ -21,6 +22,7 @@ builder.Services.AddHttpClient("YelpClient", x=>
 
 builder.Services.AddSingleton<CodeManager>();
 builder.Services.AddSingleton<RoomManager>();
+builder.Services.AddSingleton<MatchService>();
 builder.Services.AddSingleton<RestaurantManager>();
 
 builder.Services.AddSignalR();
