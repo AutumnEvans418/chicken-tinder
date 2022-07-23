@@ -37,10 +37,6 @@ namespace ChickenTinder.Client.Data
             {
                 OnMatch?.Invoke(x);
             });
-
-
-            _ = Connect();
-           // _ = Connect().ContinueWith(x => CreateRoom());
         }
 
         public bool HasRoom => _room is not null;
