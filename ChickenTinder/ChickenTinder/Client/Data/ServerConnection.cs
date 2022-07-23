@@ -100,6 +100,8 @@ namespace ChickenTinder.Client.Data
 
         public async Task LeaveRoom()
         {
+            await Connect();
+
             if (_hubConnection is not null && HasRoom)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("LeaveRoom", _room!.ID, _user);
@@ -108,6 +110,8 @@ namespace ChickenTinder.Client.Data
 
         public async Task Like(string RestaurantId, int votes)
         {
+            await Connect();
+
             if (_hubConnection is not null && _room is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("Like", _room?.ID, RestaurantId, votes);
@@ -116,6 +120,8 @@ namespace ChickenTinder.Client.Data
 
         public async Task Start()
         {
+            await Connect();
+
             if (_hubConnection is not null && HasRoom)
             {
                 await _hubConnection.InvokeAsync("StartRoom", _room!.ID);

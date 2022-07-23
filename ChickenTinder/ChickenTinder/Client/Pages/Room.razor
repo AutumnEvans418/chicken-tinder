@@ -15,15 +15,19 @@
     }
 </ul>
 
-
-<button class="btn" @onclick="Start">Start</button>
+@if (server.IsHost)
+{
+    <button class="btn" @onclick="() => server.Start()">Start</button>
+}
 @code {
     protected override void OnInitialized()
     {
         if (server.HasRoom == false)
             throw new Exception("impossible!");
-        
+
         server.OnJoin += UserJoined;
+        server.OnLeave += UserLeft;
+        server.OnStart += Start;
         base.OnInitialized();
     }
 
@@ -38,9 +42,9 @@
     }
 
     [Parameter]
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
     [Parameter]
-    public int Id { get; set; }
+    public int? Id { get; set; }
     public void Start()
     {
         nav.NavigateTo("/swipe");

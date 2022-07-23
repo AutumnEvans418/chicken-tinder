@@ -1,7 +1,7 @@
 ﻿@using ChickenTinder.Client.Data
 @using ChickenTinder.Shared.Models
 @inject ServerConnection server
-
+@inject NavigationManager nav
 <div class="tinder">
     <div class="tinder--status">
         <i class="fa-solid fa-star"></i>
@@ -15,7 +15,7 @@
         @foreach (var item in Restaurants)
         {
             <div class="tinder--card">
-               <Card Restaurant="@item"></Card>
+                <Card Restaurant="@item"></Card>
             </div>
         }
     </div>
@@ -39,17 +39,26 @@
         {
             interop = new SwipeJsInterop(runtime);
             interop.OnSwiped += OnSwipe;
-            if (server.HasRoom != true)
-                await server.CreateRoom();
+
+            if (server.Room == null)
+                throw new Exception("room cannot be null");
+
+            server.OnMatch += Matched;
             Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
             StateHasChanged();
         }
         await interop.Start();
     }
 
+    public void Matched(string restaurantId)
+    {
+        server.Room.WinningRestaurant = server.Room.GetRestaurant(restaurantId);
+        nav.NavigateTo($"/match/{server.Room.ID}");
+    }
 
     public async void OnSwipe(object? sender, SwipeDirection action)
     {
+        Console.WriteLine("I am being clicked");
         Console.WriteLine(action);
         var restaurant = Restaurants.First();
 
@@ -64,7 +73,7 @@
                 SwipeDirection.Up => 3,
                 _ => throw new Exception(),
             };
-            //await server.Like(restaurant.ID, votes);
+            await server.Like(restaurant.ID, votes);
         }
 
         if (action == SwipeDirection.Left)

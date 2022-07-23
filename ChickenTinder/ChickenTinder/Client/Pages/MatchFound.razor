@@ -1,4 +1,4 @@
-﻿@page "/match{roomid:int}"
+﻿@page "/match/{roomid:int}"
 @using ChickenTinder.Client.Data
 @using ChickenTinder.Shared.Models
 @inject ServerConnection ServerConnection
@@ -27,6 +27,8 @@
 </div>
 
 @code {
+    [Parameter]
+    public int RoomId { get; set; }
     private DiningRoom Room { get; set; }
     private string RestaurantName { get; set; } = "";
 
@@ -35,7 +37,7 @@
         if (ServerConnection.Room != null)
         {
             Room = ServerConnection.Room;
-            RestaurantName = Room.WinningRestaurant == null ? "" : Room.WinningRestaurant
+            //RestaurantName = Room.WinningRestaurant == null ? "" : Room.WinningRestaurant
         }        
     }
 }

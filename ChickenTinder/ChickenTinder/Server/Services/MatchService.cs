@@ -8,19 +8,14 @@ public class MatchService
     {
         if (match.Restaurant?.ID == null) throw new ArgumentException("Restaurant not valid");
 
+        room.Matches.Add(match);
+
         bool matchFound = false;
-        if (room.Matches.Count == 0 || !room.Matches.Any(m => m.Restaurant?.ID == match.Restaurant.ID))
+
+        if (room.Matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID).Count() == room.Users.Count)
         {
-            room.Matches.Add(match);
-            matchFound = false;
-        }
-        else
-        {
-            if (room.Matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID).Count() == room.Users.Count)
-            {
-                matchFound = true;
-                room.WinningRestaurant = match.Restaurant;
-            }
+            matchFound = true;
+            room.WinningRestaurant = match.Restaurant;
         }
         return matchFound;
     }
