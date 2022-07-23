@@ -2,5 +2,10 @@
 {
     public class MatchService
     {
+
+        public void AddLike()
+        {
+
+        }
     }
 }
