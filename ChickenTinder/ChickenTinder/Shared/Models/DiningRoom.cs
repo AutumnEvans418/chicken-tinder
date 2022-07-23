@@ -17,7 +17,7 @@ public class DiningRoom
     public int ID { get; set; }
     public List<Restaurant> Restaurants { get; set; }
     public List<Match> Matches { get; set; }
-
+    public Restaurant WinningRestaurant { get; set; }
 
     public Restaurant? GetRestaurant(string Id)
     {
