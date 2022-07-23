@@ -1,10 +1,42 @@
 ﻿@page "/room"
 @page "/room/{Id}"
 @page "/room/{Id}/join/{UserId}"
+@using ChickenTinder.Shared.Models
 @inject NavigationManager nav
-<h3>Room</h3>
+@inject ServerConnection server
+<h3>Room: @server.Room.ID</h3>
+
+<ul>
+    @foreach (var user in server.Room.Users)
+    {
+        <li>
+            @user.Value.SignalRConnection
+        </li>
+    }
+</ul>
+
+
 <button class="btn" @onclick="Start">Start</button>
 @code {
+    protected override void OnInitialized()
+    {
+        if (server.HasRoom == false)
+            throw new Exception("impossible!");
+        
+        server.OnJoin += UserJoined;
+        base.OnInitialized();
+    }
+
+    public void UserJoined(User user)
+    {
+        StateHasChanged();
+    }
+
+    public void UserLeft(User user)
+    {
+        StateHasChanged();
+    }
+
     [Parameter]
     public int UserId { get; set; }
     [Parameter]

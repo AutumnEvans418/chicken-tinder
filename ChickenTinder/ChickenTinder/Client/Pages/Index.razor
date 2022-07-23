@@ -21,10 +21,6 @@
 
 </div>
 
-<SwipeList>
-
-</SwipeList>
-
 @code {
     private string? _code;
     public string? Code
@@ -44,8 +40,17 @@
     }
     public string JoinText { get; set; } = "Host";
 
-    public void Join()
+    public async void Join()
     {
+        if (string.IsNullOrWhiteSpace(Code))
+        {
+            await _server.CreateRoom();
+        }
+        else
+        {
+            await _server.JoinRoom(int.Parse(Code));
+        }
+
         //create the room...
         nav.NavigateTo("/room");
     }

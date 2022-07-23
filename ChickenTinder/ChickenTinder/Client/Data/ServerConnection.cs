@@ -26,12 +26,16 @@ namespace ChickenTinder.Client.Data
 
             _hubConnection.On<User>("OnJoin", (x) =>
             {
+                if (HasRoom)
+                    Room.Users.Add(x.SignalRConnection, x);
                 OnJoin?.Invoke(x);
             });
 
             _hubConnection.On<User>("OnLeave", (x) =>
             {
-                OnJoin?.Invoke(x);
+                if (HasRoom)
+                    Room.Users.Remove(x.SignalRConnection);
+                OnLeave?.Invoke(x);
             });
 
             _hubConnection.On<string>("OnMatch", (x) =>
@@ -40,7 +44,7 @@ namespace ChickenTinder.Client.Data
                 OnMatch?.Invoke(x);
             });
         }
-
+        public bool IsHost => this._hubConnection.ConnectionId == _room.Host.SignalRConnection;
         public bool HasRoom => _room is not null;
         public DiningRoom? Room => _room;
 
@@ -87,6 +91,7 @@ namespace ChickenTinder.Client.Data
 
         public async Task JoinRoom(int roomId)
         {
+            await Connect();
             if (_hubConnection is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, _user);

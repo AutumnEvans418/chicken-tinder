@@ -18,9 +18,9 @@ namespace ChickenTinder.Server.Hubs
             return await _roomManager.CreateRoom(user);
         }
 
-        public async Task<DiningRoom?> JoinRoom(User user, int roomId)
+        public async Task<DiningRoom?> JoinRoom(int roomId, User user)
         {
-            await InvokeJoin(roomId, user.SignalRConnection);
+            await InvokeJoin(roomId, user);
             return _roomManager.JoinRoom(user, roomId);
         }
 
@@ -40,7 +40,7 @@ namespace ChickenTinder.Server.Hubs
         public async Task LeaveRoom(User user, int roomId)
         {
             _roomManager.LeaveRoom(user, roomId);
-            await InvokeJoin(roomId, user.SignalRConnection);
+            await InvokeLeave(roomId, user);
         }
 
         private async Task InvokeMatch(int roomId, string RestaurantId)
@@ -48,12 +48,12 @@ namespace ChickenTinder.Server.Hubs
             await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnMatch", RestaurantId);
         }
 
-        private async Task InvokeJoin(int roomId, string userId)
+        private async Task InvokeJoin(int roomId, User userId)
         {
             await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnJoin", userId);
         }
 
-        private async Task InvokeLeave(int roomId, string userId)
+        private async Task InvokeLeave(int roomId, User userId)
         {
             await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnLeave", userId);
         }
