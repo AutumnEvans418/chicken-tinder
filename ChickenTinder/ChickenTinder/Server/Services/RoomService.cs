@@ -81,6 +81,7 @@ public class RoomService
 
                 if (_matchService.CheckForMatch(room, match))
                 {
+                    room.WinningRestaurant = restaurant;
                     return true;
                 }
             }
