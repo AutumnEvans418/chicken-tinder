@@ -83,7 +83,7 @@ public class RoomService
     public List<string> GetUserIds(int roomId)
     {
         if (_rooms.TryGetValue(roomId, out var room))
-            return room.Users.Keys.ToList();
+            return room.Users.Select(x => x.SignalRConnection).ToList();
         else
             return new();
     }

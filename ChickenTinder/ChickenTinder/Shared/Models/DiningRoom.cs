@@ -12,13 +12,13 @@ namespace ChickenTinder.Shared.Models
         public DiningRoom(User host, List<Restaurant> restaurants)
         {
             Host = host;
-            Users = new() { { host.SignalRConnection, host } };
+            Users = new() { { host } };
             Restaurants = restaurants;
             Matches = new List<Match>();
         }
 
         public User Host { get; set; }
-        public Dictionary<string, User> Users { get; set; }
+        public List<User> Users { get; set; }
         public int ID { get; set; }
         public List<Restaurant> Restaurants { get; set; }
         public List<Match> Matches { get; set; }
@@ -29,22 +29,20 @@ namespace ChickenTinder.Shared.Models
         }
         public User? GetUser(string Id)
         {
-            if (Users.ContainsKey(Id))
-                return Users[Id];
-            else return null;
+            return Users.FirstOrDefault(x=> x.SignalRConnection == Id);
         }
         public bool UserExist(string id)
         {
-            return Users.ContainsKey(id);
+            return Users.Any(x=> x.SignalRConnection == id);
         }
 
         public void Join(User user)
         {
-            Users.Add(user.SignalRConnection, user);
+            Users.Add(user);
         }
         public void Leave(User user)
         {
-            Users.Remove(user.SignalRConnection);
+            Users.Remove(user);
         }
 
         public string ToJson()
