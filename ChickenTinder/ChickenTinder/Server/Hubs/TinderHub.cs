@@ -34,9 +34,17 @@ namespace ChickenTinder.Server.Hubs
 
         }
 
-        public async Task Like(int roomId)
+        public async Task Like(int roomId, string RestaurantId, int votes)
         {
+            if (_roomManager.Vote(roomId, Context.ConnectionId, RestaurantId, votes))
+            {
+                await InvokeMatch(RestaurantId);
+            }
+        }
 
+        private async Task InvokeMatch(string RestaurantId)
+        {
+          //  Clients.
         }
     }
 }
