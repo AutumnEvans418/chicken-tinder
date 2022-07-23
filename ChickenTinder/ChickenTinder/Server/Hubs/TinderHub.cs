@@ -15,11 +15,11 @@ public class TinderHub : Hub
         return await _roomManager.CreateRoom(user);
     }
 
-        public async Task<DiningRoom?> JoinRoom(int roomId, User user)
-        {
-            await InvokeJoin(roomId, user);
-            return _roomManager.JoinRoom(user, roomId);
-        }
+    public async Task<DiningRoom?> JoinRoom(int roomId, User user)
+    {
+        await InvokeJoin(roomId, user);
+        return _roomManager.JoinRoom(user, roomId);
+    }
 
     public async Task Start(int roomId)
     {
@@ -34,25 +34,24 @@ public class TinderHub : Hub
         }
     }
 
-        public async Task LeaveRoom(User user, int roomId)
-        {
-            _roomManager.LeaveRoom(user, roomId);
-            await InvokeLeave(roomId, user);
-        }
+    public async Task LeaveRoom(User user, int roomId)
+    {
+        _roomManager.LeaveRoom(user, roomId);
+        await InvokeLeave(roomId, user);
+    }
 
     private async Task InvokeMatch(int roomId, string RestaurantId)
     {
         await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnMatch", RestaurantId);
     }
 
-        private async Task InvokeJoin(int roomId, User userId)
-        {
-            await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnJoin", userId);
-        }
+    private async Task InvokeJoin(int roomId, User userId)
+    {
+        await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnJoin", userId);
+    }
 
-        private async Task InvokeLeave(int roomId, User userId)
-        {
-            await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnLeave", userId);
-        }
+    private async Task InvokeLeave(int roomId, User userId)
+    {
+        await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnLeave", userId);
     }
 }

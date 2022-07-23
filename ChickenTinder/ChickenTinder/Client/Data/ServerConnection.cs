@@ -27,14 +27,14 @@ namespace ChickenTinder.Client.Data
             _hubConnection.On<User>("OnJoin", (x) =>
             {
                 if (HasRoom)
-                    Room.Users.Add(x.SignalRConnection, x);
+                    Room.Users.Add(x);
                 OnJoin?.Invoke(x);
             });
 
             _hubConnection.On<User>("OnLeave", (x) =>
             {
                 if (HasRoom)
-                    Room.Users.Remove(x.SignalRConnection);
+                    Room.Users = Room.Users.Where(p => p.SignalRConnection != x.SignalRConnection).ToList();
                 OnLeave?.Invoke(x);
             });
 
