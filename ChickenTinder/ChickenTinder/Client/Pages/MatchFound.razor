@@ -1,4 +1,7 @@
-﻿@page "/match"
+﻿@page "/match/{roomID:int}"
+@using ChickenTinder.Client.Data
+@using ChickenTinder.Shared.Models
+@inject ServerConnection ServerConnection
 
 <div class="alert alert-success text-center fa-2xl" role="alert">
   It's a Match! <i class="fa-solid fa-champagne-glasses"></i>
@@ -9,7 +12,7 @@
         <div class="col-8">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Let's Eat!</h5>
+                    <h5 class="card-title">Let's Go to @Room!</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Great choice! Now let's do this!</h6>
                     <p class="card-text text-center">
                         <i class="fa-solid fa-burger fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
@@ -24,5 +27,15 @@
 </div>
 
 @code {
+    private DiningRoom Room { get; set; }
+    private string RestaurantName { get; set; } = "";
 
+    protected override void OnInitialized()
+    {
+        if (ServerConnection.Room != null)
+        {
+            Room = ServerConnection.Room;
+            
+        }        
+    }
 }

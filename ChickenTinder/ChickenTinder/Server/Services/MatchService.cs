@@ -1,4 +1,6 @@
-﻿namespace ChickenTinder.Server.Services;
+﻿using ChickenTinder.Shared.Models;
+
+namespace ChickenTinder.Server.Services;
 
 public class MatchService
 {
