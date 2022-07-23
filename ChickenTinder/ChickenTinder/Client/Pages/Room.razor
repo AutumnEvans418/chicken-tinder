@@ -1,0 +1,13 @@
+﻿@page "/room"
+@page "/room/{Id}"
+@page "/room/{Id}/join/{UserId}"
+<h3>Room</h3>
+
+@code {
+    [Parameter]
+    public int UserId { get; set; }
+    [Parameter]
+    public int Id { get; set; }
+
+
+}
