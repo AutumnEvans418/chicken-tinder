@@ -1,7 +1,65 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+:root {
+    /* CSS HEX */
+    --rufous: #9b2915ff;
+    --mango-tango: #f98948ff;
+    --corn: #ffec51ff;
+    --y-in-mn-blue: #304c89ff;
+    --backgroundColor: #F5F5F5;
+    --titleColor: var(--rufous);
+    --btnColor: var(--mango-tango);
+    --textColor: #424242;
+    --iconColor: var(--textColor);
+    --starColor: var(--corn);
+    --btnTextColor: white;
+    --placeHolder: var(--textColor);
+}
+
 html, body {
+    background-color: var(--backgroundColor);
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--textColor);
+}
+
+.btn {
+    background-color: var(--btnColor);
+    color: var(--btnTextColor);
+    padding-left: 20px;
+    padding-right: 20px;
+    min-width: 100px;
+}
+
+::placeholder {
+    color: var(--placeHolder);
+    opacity: 0.4;
+}
+
+.textbox {
+    border: 0px;
+    background-color: white;
+    margin: 10px;
+    border-radius: 5px;
+    text-align: center;
+    color: var(--textColor);
+}
+
+.center-bottom {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.center-all {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    color: var(--titleColor);
 }
 
 h1:focus {
