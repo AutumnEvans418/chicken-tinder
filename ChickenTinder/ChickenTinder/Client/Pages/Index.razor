@@ -1,8 +1,45 @@
 ﻿@page "/"
+@inject NavigationManager nav
+<div class="center-all">
+    <img src="/icon-192.png" />
+</div>
+<h1 class="center-all">Chicken Tinder</h1>
+<p class="center-all">Find Single Restaurants Near You</p>
 
-<PageTitle>Index</PageTitle>
+<div class="center-all">
+    <p>Host or Enter Code</p>
+</div>
+<div class="center-all">
+    <input class="textbox" placeholder="Code" @bind-value="@Code" />
+</div>
+<div class="center-bottom">
+    <button class="btn" @onclick="Join">@JoinText</button>
 
-<h1>Hello, world!</h1>
+</div>
 
-Welcome to your new app.
 
+@code {
+    private string? _code;
+    public string? Code
+    {
+        get => _code; set
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                JoinText = "Join";
+            }
+            else
+            {
+                JoinText = "Host";
+            }
+            _code = value;
+        }
+    }
+    public string JoinText { get; set; } = "Host";
+
+    public void Join()
+    {
+        //create the room...
+        nav.NavigateTo("/room");
+    }
+}
