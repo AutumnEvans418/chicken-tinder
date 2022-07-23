@@ -14,9 +14,9 @@ namespace ChickenTinder.Server.Hubs
             _roomManager = roomManager;
         }
 
-        public async Task AddRoom(User user)
+        public async Task<DinningRoom?> CreateRoom(User? user)
         {
-
+            return _roomManager.
         }
 
         public async Task JoinRoom(int roomId)

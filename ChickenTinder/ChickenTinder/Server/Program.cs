@@ -20,6 +20,7 @@ builder.Services.AddHttpClient("YelpClient", x=>
 });
 
 builder.Services.AddSingleton<CodeManager>();
+builder.Services.AddSingleton<RoomManager>();
 builder.Services.AddSingleton<RestaurantManager>();
 
 builder.Services.AddSignalR();
