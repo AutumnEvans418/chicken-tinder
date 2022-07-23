@@ -114,6 +114,13 @@ namespace ChickenTinder.Client.Data
             }
         }
 
+        public async Task Start()
+        {
+            if (_hubConnection is not null && HasRoom)
+            {
+                await _hubConnection.InvokeAsync("StartRoom", _room!.ID);
+            }
+        }
 
 
         public async ValueTask DisposeAsync()

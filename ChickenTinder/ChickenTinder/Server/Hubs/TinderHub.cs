@@ -21,7 +21,7 @@ public class TinderHub : Hub
         return _roomManager.JoinRoom(user, roomId);
     }
 
-    public async Task Start(int roomId)
+    public async Task StartRoom(int roomId)
     {
         await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnStart");
     }
