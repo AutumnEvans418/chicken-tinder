@@ -157,6 +157,15 @@ namespace ChickenTinder.Client.Data
 
         }
 
+        public async Task SetPickyUser(int roomId, string userId)
+        {
+            await Connect();
+
+            if (_hubConnection is not null && _room is not null)
+            {
+                await _hubConnection.InvokeAsync("SetPickyUser", roomId, userId);
+            }            
+        }
 
         public async ValueTask DisposeAsync()
         {

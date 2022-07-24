@@ -33,6 +33,9 @@
 
     public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
     private SwipeJsInterop interop;
+    private int listsRemaining = 1;
+    private int swipesRemaining;
+
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -45,6 +48,7 @@
 
             server.OnMatch += Matched;
             Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
+            swipesRemaining = Restaurants.Count;
             StateHasChanged();
         }
         await interop.Start();
@@ -61,7 +65,7 @@
     }
 
     public async void OnSwipe(object? sender, SwipeDirection action)
-    {
+    {        
         Console.WriteLine("I am being clicked");
         Console.WriteLine(action);
         var restaurant = Restaurants.First();
@@ -85,5 +89,23 @@
             Restaurants.Add(restaurant);
             StateHasChanged();
         }
+        swipesRemaining--;
+        if (swipesRemaining == 0)
+        {
+            ResetListCount();
+        }
+        if (listsRemaining == 0)
+        {
+            if (server?.Room != null)
+            {
+                await server.SetPickyUser(server.Room.ID, server.CurrentUserId);
+            }            
+        }
+    }
+
+    private void ResetListCount()
+    {
+        swipesRemaining = Restaurants.Count;
+        listsRemaining--;
     }
 }
