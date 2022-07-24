@@ -50,6 +50,7 @@ else
                             <i class="fa-solid fa-mug-hot fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
                         </p>
                         <button type="button" class="btn" @onclick="GetDirections">Get Directions</button>
+                        <button type="button" class="btn" @onclick="GoToYelp">Go to Yelp</button>
                     </div>
                 </div>
             </div>
@@ -91,8 +92,11 @@ else
     {
         _ = _interloopService.LaunchMaps(WinningRestaurant.Coordinates.Latitude.ToString(),
                                          WinningRestaurant.Coordinates.Longitude.ToString());
+    }
 
-        // string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.ID}";
-        // NavMan.NavigateTo(myUrl);
+    private void GoToYelp()
+    {
+        string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.Alias}";
+        NavMan.NavigateTo(myUrl);
     }
 }
