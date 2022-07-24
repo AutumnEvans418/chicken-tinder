@@ -11,11 +11,11 @@ namespace ChickenTinder.Client.Data
         private readonly LocationService _locationService;
         private DiningRoom? _room = null;
         private User? _user;
-
+        
         private readonly HubConnection _hubConnection;
+        private readonly InterloopService _interloopService;
 
-        public ServerConnection(NavigationManager NavigationManager, LocationService locationService, UserService userService, InterloopService interloop)
-        public ServerConnection(NavigationManager NavigationManager, LocationService locationService)
+        public ServerConnection(NavigationManager NavigationManager, LocationService locationService,  InterloopService interloop)
         {
             _interloopService = interloop;
 
@@ -85,9 +85,8 @@ namespace ChickenTinder.Client.Data
                     await _interloopService.SetLocalStorage("ChickenTinder.UserId", userId);
                 }
 
-                _user = await userService.GetRandomUser();
+                _user = new();
                 _user.SignalRConnection = userId ?? "NA";
-                _user = new User();
                 _user.Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty;
                 _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
                 _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
