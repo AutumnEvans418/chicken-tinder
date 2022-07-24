@@ -49,6 +49,7 @@ namespace ChickenTinder.Client.Data
                 OnMatch?.Invoke(x);
             });
         }
+        public User CurrentUser => this.Room.Users.First(p => p.SignalRConnection == CurrentUserId);
         public string CurrentUserId => this._hubConnection.ConnectionId;
         public bool IsHost => this._hubConnection.ConnectionId == _room.Host.SignalRConnection;
         public bool HasRoom => _room is not null;

@@ -6,7 +6,6 @@
 }
 
 
-
 body {
     background: #CCFBFE;
     overflow: hidden;
@@ -58,7 +57,7 @@ body {
     transform: scale(1);
 }
 
-.tinder_love .fa-star {
+.tinder_love .fa-heart {
     opacity: 0.7;
     transform: scale(1);
 }
@@ -126,6 +125,12 @@ body {
     flex: 0 0 100px;
     text-align: center;
     padding-top: 20px;
+    --color-light-red: #F8CECC;
+    --color-light-blue: #DAE8FC;
+    --color-light-green: #D5E8D4;
+    --color-light-orange: #FFE6CC;
+    --color-light-yellow: #FFF2CC;
+    --color-light-purple: #E1D5E7
 }
 
     .tinder--buttons button {
@@ -147,8 +152,21 @@ body {
         vertical-align: middle;
     }
 
-.fa-heart {
-    color: #FFACE4;
+
+#love {
+    background-color: var(--color-light-green);
+}
+
+#like {
+    background-color: var(--color-light-green);
+}
+
+#dislike {
+    background-color: var(--color-light-orange);
+}
+
+#nope {
+    background-color: var(--color-light-red);
 }
 
 .fa-remove {

@@ -1,0 +1,41 @@
+﻿@using ChickenTinder.Shared.Models
+@if (User != null)
+{
+    <div class="user-container">
+        <i style="@GetStyle(User.Color ?? throw new Exception())" class="@GetClass(@User.Class)"></i>
+        @if (ShowName)
+        {
+            <div style="display: table-cell; padding: 5px"></div>
+            <p class="user-badge">
+                @User.Name
+                @if (IsYou)
+                {
+                    <span> (You)</span>
+                }
+            </p>
+        }
+
+    </div>
+
+}
+
+@code {
+    [Parameter]
+    public int Width { get; set; } = 64;
+
+    [Parameter]
+    public User? User { get; set; }
+
+    [Parameter]
+    public bool IsYou { get; set; }
+
+    [Parameter]
+    public bool ShowName { get; set; }
+
+    public string GetStyle(string color)
+    {
+        return $"background-color: #{color}; width: {Width}px; height: {Width}px; font-size: {Width * .4}px";
+    }
+
+    public string GetClass(string? classList) => classList += " user-icon";
+}

@@ -1,6 +1,10 @@
 ﻿@page "/swipe/{Id}/join/{UserId}"
 @page "/swipe"
+@inject ServerConnection server
 
+<div class="header-right">
+    <UserBadge User="server.CurrentUser"></UserBadge>
+</div>
 <SwipeList>
 </SwipeList>
 @code {

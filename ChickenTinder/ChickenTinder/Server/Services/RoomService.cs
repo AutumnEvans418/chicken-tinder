@@ -33,6 +33,7 @@ public class RoomService
 
         user.Name = data.Name;
         user.Class = data.Class;
+        user.Color = data.Color;
         var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude) 
                                             ? await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude) 
                                             : await _reastaurantService.GetRestaurants(user.Location);
@@ -60,6 +61,7 @@ public class RoomService
             var data = await userService.GetRandomUser(room.Users.Select(p => p.Name).ToList());
             user.Name = data.Name;
             user.Class = data.Class;
+            user.Color = data.Color;
             room.Join(user);
             return room;
         }
