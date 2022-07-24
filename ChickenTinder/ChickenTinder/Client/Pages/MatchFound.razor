@@ -2,7 +2,7 @@
 @using ChickenTinder.Client.Data
 @using ChickenTinder.Shared.Models
 @inject ServerConnection ServerConnection
-
+@inject NavigationManager NavMan
 
 @*<div class="pyro">
   <div class="before"></div>
@@ -10,7 +10,7 @@
   <div class="after"></div>
 </div>*@
 
-@if (Room?.WinningRestaurant == null)
+@if (WinningRestaurant == null)
 {
     <div class="alert alert-info text-center fa-2xl" role="alert">
         Hang on, we are getting your restaurant ready... <i class="fa-solid fa-thumbs-up"></i>
@@ -45,7 +45,7 @@ else
                             <i class="fa-solid fa-bowl-rice fa-2xl"></i> <i class="fa-solid fa-heart pe-3"></i>
                             <i class="fa-solid fa-mug-hot fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
                         </p>
-                        <button type="button" class="btn btn-primary">Get Directions</button>
+                        <button type="button" class="btn btn-primary" @onclick="GetDirections">Get Directions</button>
                     </div>
                 </div>
             </div>
@@ -59,18 +59,23 @@ else
     public int RoomID { get; set; }
 
     private DiningRoom? Room { get; set; }
-    private string RestaurantName { get; set; } = "";
     private Restaurant WinningRestaurant { get; set; }
+    private string RestaurantName { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
         Room = await ServerConnection.GetRoom(RoomID);
-        if (Room != null)
+        if (Room != null && Room?.WinningRestaurant != null)
         {
             Room = ServerConnection.Room;
-            
-            WinningRestaurant = Room?.WinningRestaurant;
-            RestaurantName = Room?.WinningRestaurant?.Name == null ? "" : Room.WinningRestaurant.Name;
+            WinningRestaurant = Room.WinningRestaurant;
+            RestaurantName = Room.WinningRestaurant.Name;
         }
+    }
+
+    private void GetDirections()
+    {
+        string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.ID}";
+        NavMan.NavigateTo(myUrl);
     }
 }
