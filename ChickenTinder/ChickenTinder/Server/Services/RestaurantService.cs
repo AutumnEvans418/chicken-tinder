@@ -33,7 +33,7 @@ public class RestaurantService
 
         if (output is null)
         {
-            output = (await _httpClient.GetFromJsonAsync<YelpResponce>("search?term=delis&latitude=" + latitude + "& longitude=-" + longitude))?.Businesses;
+            output = (await _httpClient.GetFromJsonAsync<YelpResponce>("search?term=delis&latitude=" + latitude + "& longitude=" + longitude))?.Businesses;
             _cache.Set(latitude + longitude, output, TimeSpan.FromMinutes(15));
         }
 
