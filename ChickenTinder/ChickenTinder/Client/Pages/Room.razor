@@ -4,22 +4,37 @@
 @using ChickenTinder.Shared.Models
 @inject NavigationManager nav
 @inject ServerConnection server
-<h3>Room: @server.Room.ID</h3>
+@inject IJSRuntime runtime
 
-<ul>
-    @foreach (var user in server.Room.Users)
-    {
-        <li>
-            @user.SignalRConnection
-        </li>
-    }
-</ul>
+<h3 class="center-all">Dinning Room Code</h3>
+<h3 class="center-all" style="margin-bottom: 5%">@server.Room.ID</h3>
+@foreach (var user in server.Room.Users)
+{
+    <div class="center-all">
+        <p style="min-width: 300px;align-content: center; text-align: center; ;padding: 10px; border-radius: 5px; font-size: 20px; background-color: white">
+            <i class="@user.Class" style="@GetStyle(user.Color)"></i>
+            @user.Name
+            @if (server.CurrentUserId == @user.SignalRConnection)
+            {
+                <span> (You)</span>
+            }
+        </p>
+    </div>
+}
 
 @if (server.IsHost)
 {
-    <button class="btn" @onclick="() => server.Start()">Start</button>
+    <div class="footer">
+        <button class="btn" @onclick="() => server.Start()">Start</button>
+    </div>
 }
 @code {
+
+    public string GetStyle(string color)
+    {
+        return $"margin-right: 5px; border-radius: 50%; background-color: #{color}; padding: 10px";
+    }
+
     protected override void OnInitialized()
     {
         if (server.HasRoom == false)
@@ -40,7 +55,10 @@
     {
         StateHasChanged();
     }
-
+    private async Task CopyTextToClipboard()
+    {
+        await runtime.InvokeVoidAsync("clipboardCopy.copyText", server.Room.ID);
+    }
     [Parameter]
     public int? UserId { get; set; }
     [Parameter]

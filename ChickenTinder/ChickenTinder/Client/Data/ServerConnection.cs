@@ -11,8 +11,9 @@ namespace ChickenTinder.Client.Data
         private User? _user;
 
         private readonly HubConnection _hubConnection;
+        private readonly UserService userService;
 
-        public ServerConnection(NavigationManager NavigationManager)
+        public ServerConnection(NavigationManager NavigationManager, UserService userService)
         {
             _hubConnection = new HubConnectionBuilder()
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tinderhub"))
@@ -43,7 +44,9 @@ namespace ChickenTinder.Client.Data
                 Console.WriteLine(x + "   is a match !!!!!!!");
                 OnMatch?.Invoke(x);
             });
+            this.userService = userService;
         }
+        public string CurrentUserId => this._hubConnection.ConnectionId;
         public bool IsHost => this._hubConnection.ConnectionId == _room.Host.SignalRConnection;
         public bool HasRoom => _room is not null;
         public DiningRoom? Room => _room;
@@ -67,11 +70,11 @@ namespace ChickenTinder.Client.Data
             await _hubConnection.StartAsync();
 
             if (_user is null)
-                _user = new()
-                {
-                    Name = "Tommy",
-                    SignalRConnection = _hubConnection.ConnectionId ?? "NA"
-                };
+            {
+                _user = await userService.GetRandomUser();
+                _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
+            }
+                
         }
 
         public async Task CreateRoom(string location = "Kansas City")

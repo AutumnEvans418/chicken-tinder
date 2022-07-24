@@ -2,6 +2,15 @@
 var tinderContainer = null;
 var allCards = null;
 
+window.clipboardCopy = {
+    copyText: function (text) {
+        navigator.clipboard.writeText(text).then(function () {
+        })
+            .catch(function (error) {
+                alert(error);
+            });
+    }
+};
 
 function createButtonListener(love) {
     return function (event) {

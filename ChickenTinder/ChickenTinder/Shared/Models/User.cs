@@ -11,6 +11,10 @@ namespace ChickenTinder.Shared.Models
         public string SignalRConnection { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string? Class { get; set; }
+        public string? Color { get; set; }
+
+        public string Style => $"color: #{Color}";
     }
 
     public enum UserAction
