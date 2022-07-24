@@ -35,6 +35,7 @@ namespace ChickenTinder.Client.Data
 
             _hubConnection.On<User>("OnJoin", (x) =>
             {
+                Console.WriteLine("User Joined");
                 if (HasRoom && x.SignalRConnection != CurrentUserId)
                     Room.Users.Add(x);
                 OnJoin?.Invoke(x);
@@ -53,8 +54,8 @@ namespace ChickenTinder.Client.Data
                 OnMatch?.Invoke(x);
             });
         }
-        public string CurrentUserId => this._hubConnection.ConnectionId;
-        public bool IsHost => this._hubConnection.ConnectionId == _room.Host.SignalRConnection;
+        public string CurrentUserId => _user.SignalRConnection;
+        public bool IsHost => _user?.SignalRConnection == _room?.Host.SignalRConnection;
         public bool HasRoom => _room is not null;
         public DiningRoom? Room => _room;
 
@@ -80,11 +81,12 @@ namespace ChickenTinder.Client.Data
                     await _interloopService.SetLocalStorage("UserId", userId);
                 }
 
-                _user = new();
-                _user.SignalRConnection = userId ?? "NA";
-                _user.Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty;
-                _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
-                _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
+                _user = new()
+                {
+                    SignalRConnection = userId ?? throw new Exception("not connected"),
+                    Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty,
+                    Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty
+                };
             }
         }
 
@@ -104,14 +106,19 @@ namespace ChickenTinder.Client.Data
             //Console.WriteLine(_room!.ToJson());
         }
 
-       
-
         public async Task JoinRoom(int roomId)
         {
             await Connect();
             if (_hubConnection is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, _user);
+
+                var other = _room.Users.FirstOrDefault(x=> x.SignalRConnection == _user.SignalRConnection);
+                if (other is not null)
+                {
+                    Console.WriteLine("Session is being restored!");
+                    _user.Apply(other);
+                }
             }
         }
 

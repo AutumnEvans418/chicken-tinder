@@ -33,8 +33,8 @@ public class RoomService
 
         user.Name = data.Name;
         user.Class = data.Class;
-        var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude) 
-                                            ? await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude) 
+        var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude)
+                                            ? await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude)
                                             : await _reastaurantService.GetRestaurants(user.Location);
         if (locations is not null)
         {
@@ -57,10 +57,14 @@ public class RoomService
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
-            var data = await userService.GetRandomUser(room.Users.Select(p => p.Name).ToList());
-            user.Name = data.Name;
-            user.Class = data.Class;
-            room.Join(user);
+            if (!room.Users.Any(x => x.SignalRConnection == user.SignalRConnection))
+            {
+                var data = await userService.GetRandomUser(room.Users.Select(p => p.Name).ToList());
+                user.Name = data.Name;
+                user.Class = data.Class;
+                room.Join(user);
+            }
+
             return room;
         }
         return null;

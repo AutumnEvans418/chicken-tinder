@@ -18,6 +18,18 @@ namespace ChickenTinder.Shared.Models
         public bool MaxSwipesReached { get; set; }
 
         public string Style => $"color: #{Color}";
+
+        public void Apply(User user)
+        {
+            SignalRConnection = user.SignalRConnection;
+            Longitude = user.Longitude;
+            Latitude = user.Latitude;
+            Location = user.Location;
+            Name = user.Name;
+            Class = user.Class;
+            Color = user.Color;
+            MaxSwipesReached = user.MaxSwipesReached;
+        }
     }
 
     public enum UserAction
