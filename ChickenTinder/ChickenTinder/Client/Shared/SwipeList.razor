@@ -32,7 +32,7 @@
 @code {
 
     public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
-    private SwipeJsInterop interop;
+    private SwipeJsInterop? interop;
     private int listsRemaining = 2;
     private int swipesRemaining;
 
@@ -53,7 +53,8 @@
             StateHasChanged();
         }
         Console.WriteLine("blazore re-rendered");
-        await interop.Start();
+        if (interop != null)
+            await interop.Start();
     }
 
     public void Matched(string restaurantId)
@@ -92,7 +93,7 @@
         if (action == SwipeDirection.Left)
         {
             Restaurants.Add(restaurant);
-            
+
             Console.WriteLine($"{restaurant.Name} added back to list");
         }
         Console.WriteLine($"Restaurant Count: {Restaurants.Count}");
@@ -110,9 +111,6 @@
                 }
             }
         }
-        StateHasChanged();
-
-
     }
 
     private void ResetListCount()
