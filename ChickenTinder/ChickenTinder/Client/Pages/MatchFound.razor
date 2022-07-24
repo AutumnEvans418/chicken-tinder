@@ -77,7 +77,9 @@ else
 
     private void GetDirections()
     {
-        _interloopService.LaunchMaps(WinningRestaurant.Coordinates.Latitude.ToString(), WinningRestaurant.Coordinates.Longitude.ToString());
+        _ = _interloopService.LaunchMaps(WinningRestaurant.Coordinates.Latitude.ToString(),
+                                         WinningRestaurant.Coordinates.Longitude.ToString());
+
         // string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.ID}";
         // NavMan.NavigateTo(myUrl);
     }
