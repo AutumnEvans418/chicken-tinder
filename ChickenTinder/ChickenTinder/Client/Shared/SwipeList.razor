@@ -47,7 +47,7 @@
                 throw new Exception("room cannot be null");
 
             server.OnMatch += Matched;
-            Restaurants = server.Room?.Restaurants.Take(3).ToList() ?? new List<Restaurant>();
+            Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
             swipesRemaining = Restaurants.Count;
             Console.WriteLine($"Swipes Remaining: {swipesRemaining}");
             StateHasChanged();

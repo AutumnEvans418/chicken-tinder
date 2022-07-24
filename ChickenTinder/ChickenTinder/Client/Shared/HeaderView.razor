@@ -1,0 +1,14 @@
+﻿@inject ServerConnection server
+@inject NavigationManager nav 
+<div class="header-right">
+    <UserBadge User="@server.CurrentUser" Width="64"></UserBadge>
+</div>
+<div class="header-left">
+    <a @onclick="Home"><img src="icon-96.png" width="64" height="64"/></a> 
+</div>
+
+@code {
+    public void Home(){
+        nav.NavigateTo("/");
+    }
+}
