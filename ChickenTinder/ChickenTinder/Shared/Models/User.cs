@@ -22,10 +22,10 @@ namespace ChickenTinder.Shared.Models
 
     public enum UserAction
     {
-        Like,
-        Dislike,
-        No,
-        Yes
+        No = 0,
+        Maybe = 1,
+        Like = 2,
+        Love = 3
     }
 
     public enum SwipeDirection

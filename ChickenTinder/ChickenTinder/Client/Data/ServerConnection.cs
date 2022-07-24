@@ -126,7 +126,7 @@ namespace ChickenTinder.Client.Data
             }
         }
 
-        public async Task Like(string RestaurantId, int votes)
+        public async Task Like(string RestaurantId, UserAction votes)
         {
             await Connect();
 

@@ -82,9 +82,9 @@
         {
             var votes = action switch
             {
-                SwipeDirection.Left => 1,
-                SwipeDirection.Right => 2,
-                SwipeDirection.Up => 3,
+                SwipeDirection.Left => UserAction.Maybe,
+                SwipeDirection.Right => UserAction.Like,
+                SwipeDirection.Up => UserAction.Love,
                 _ => throw new Exception(),
             };
             await server.Like(restaurant.ID, votes);
