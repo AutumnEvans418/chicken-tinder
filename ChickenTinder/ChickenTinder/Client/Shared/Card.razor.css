@@ -1,0 +1,14 @@
+﻿.card-image {
+    object-fit: fill;
+    width: 192px;
+    height: 192px;
+}
+
+.unselectable {
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
