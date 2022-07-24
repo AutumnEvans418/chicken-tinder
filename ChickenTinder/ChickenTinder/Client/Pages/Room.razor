@@ -6,8 +6,8 @@
 
 @inject NavigationManager nav
 @inject ServerConnection server
-@inject IJSRuntime runtime
 @inject InterloopService _shareService;
+
 
 @if (server.HasRoom)
 {
@@ -41,6 +41,7 @@
         return $"margin-right: 5px; border-radius: 50%; background-color: #{color}; padding: 10px;";
     }
 
+  
     protected async override void OnInitialized()
     {
         if (!server.HasRoom)
@@ -75,7 +76,7 @@
     }
     private async Task CopyTextToClipboard()
     {
-        await runtime.InvokeVoidAsync("clipboardCopy.copyText", server.Room?.ID);
+     //   await _js.InvokeVoidAsync("clipboardCopy.copyText", server.Room?.ID);
     }
     [Parameter]
     public int? UserId { get; set; }

@@ -5,6 +5,8 @@
 @inject ServerConnection ServerConnection
 @inject NavigationManager NavMan
 @inject InterloopService _interloopService;
+@inject IJSRuntime _js;
+
 <HeaderView></HeaderView>
 @*<div class="pyro">
   <div class="before"></div>
@@ -50,6 +52,7 @@ else
                             }
                         </p>
                         <button type="button" class="btn" @onclick="GetDirections">Get Directions</button>
+                        <button type="button" class="btn" @onclick="GoToYelp">Go to Yelp</button>
                     </div>
                 </div>
             </div>
@@ -81,6 +84,15 @@ else
         };
     }
 
+    protected async override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _js.InvokeVoidAsync("Fireworks.confetti");
+            StateHasChanged();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         Room = await ServerConnection.GetRoom(RoomID);
@@ -101,8 +113,11 @@ else
     {
         _ = _interloopService.LaunchMaps(WinningRestaurant.Coordinates.Latitude.ToString(),
                                          WinningRestaurant.Coordinates.Longitude.ToString());
+    }
 
-        // string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.ID}";
-        // NavMan.NavigateTo(myUrl);
+    private void GoToYelp()
+    {
+        string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.Alias}";
+        NavMan.NavigateTo(myUrl);
     }
 }
