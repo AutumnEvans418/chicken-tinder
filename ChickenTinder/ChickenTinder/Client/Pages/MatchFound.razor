@@ -43,9 +43,11 @@ else
                         <h5 class="card-title">Let's Go to @RestaurantName.</h5>
                         <h6 class="card-subtitle mb-2 text-muted">Great choice! Now let's do this!</h6>
                         <p class="card-text text-center">
-                            <i class="fa-solid fa-burger fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
-                            <i class="fa-solid fa-bowl-rice fa-2xl"></i> <i class="fa-solid fa-heart pe-3"></i>
-                            <i class="fa-solid fa-mug-hot fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
+                            @foreach (var match in Matches)
+                            {
+                                <i class="@GetUserClass(match.User?.Class)"></i>
+                                <i class="@GetActionClass(match.Action)"></i>
+                            }
                         </p>
                         <button type="button" class="btn" @onclick="GetDirections">Get Directions</button>
                     </div>
@@ -63,6 +65,21 @@ else
     private DiningRoom? Room { get; set; }
     private Restaurant? WinningRestaurant { get; set; }
     private string RestaurantName { get; set; } = "";
+    public List<Match> Matches { get; set; } = new List<Match>();
+
+    public string GetUserClass(string? classList) => classList + " fa-2xl";
+
+    public string GetActionClass(UserAction aciton)
+    {
+        return aciton switch
+        {
+            UserAction.Like => "fa-solid fa-thumbs-up pe-3",
+            UserAction.Dislike => "fa-solid fa-arrow-rotate-left pe-3",
+            UserAction.No => string.Empty,
+            UserAction.Yes => "fa-solid fa-heart pe-3",
+            _ => throw new Exception("IMPOSSIBLE")
+        };
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,6 +88,10 @@ else
         {
             WinningRestaurant = Room.WinningRestaurant;
             RestaurantName = Room.WinningRestaurant.Name;
+            Matches = Room
+                .Matches
+                .Where(p => p.Restaurant?.ID == WinningRestaurant.ID)
+                .ToList();
         }
 
         //await ServerConnection.LeaveRoom();
