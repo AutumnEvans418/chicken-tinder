@@ -17,6 +17,13 @@
 
 }
 
+a {
+    cursor: pointer;
+}
+
+button {
+    cursor: pointer;
+}
 
 html, body {
     background-color: var(--backgroundColor);
@@ -89,10 +96,17 @@ html, body {
 }
 
 .header-right {
-    transform: translate(-50,50%);
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 5px;
+    right: 5px;
+    z-index: 5;
+}
+
+.header-left {
+    position: fixed;
+    top: 5px;
+    left: 5px;
+    z-index: 5;
 }
 
 .footer {
