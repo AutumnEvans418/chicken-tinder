@@ -35,7 +35,7 @@ namespace ChickenTinder.Client.Data
 
             _hubConnection.On<User>("OnJoin", (x) =>
             {
-                if (HasRoom)
+                if (HasRoom && x.SignalRConnection != CurrentUserId)
                     Room.Users.Add(x);
                 OnJoin?.Invoke(x);
             });
@@ -112,7 +112,6 @@ namespace ChickenTinder.Client.Data
             if (_hubConnection is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, _user);
-                
             }
         }
 
