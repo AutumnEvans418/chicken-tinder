@@ -11,5 +11,6 @@ builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(build
 
 builder.Services.AddSingleton<ServerConnection>();
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<LocationService>();
 
 await builder.Build().RunAsync();

@@ -27,7 +27,9 @@ public class RoomService
     {
         if (user is null) return null;
 
-        var locations = await _reastaurantService.GetRestaurants(user.Location);
+        var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude) 
+                                            ? await _reastaurantService.GetRestaurants(user.Longitude, user.Latitude) 
+                                            : await _reastaurantService.GetRestaurants(user.Location);
         if (locations is not null)
         {
             DiningRoom room = new(user, locations)
@@ -60,6 +62,14 @@ public class RoomService
         if (_rooms.TryGetValue(roomId, out var room))
         {
             room.Leave(user);
+        }
+    }
+
+    public void SetUserVoid(int roomId, string userId)
+    {
+        if (_rooms.TryGetValue(roomId, out var room))
+        {
+            room.VoidUser(userId);
         }
     }
 

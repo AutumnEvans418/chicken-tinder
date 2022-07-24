@@ -14,10 +14,11 @@ public class DiningRoom
 
     public User Host { get; set; }
     public List<User> Users { get; set; }
+    public List<User> VoidedUsers { get; set; } = new();
     public int ID { get; set; }
     public List<Restaurant> Restaurants { get; set; }
     public List<Match> Matches { get; set; }
-    public Restaurant WinningRestaurant { get; set; }
+    public Restaurant? WinningRestaurant { get; set; }
 
     public Restaurant? GetRestaurant(string Id)
     {
@@ -32,6 +33,16 @@ public class DiningRoom
     public bool UserExist(string id)
     {
         return Users.Any(x=> x.SignalRConnection == id);
+    }
+
+    public void VoidUser(string id)
+    {
+        var user = GetUser(id);
+        if (user is not null)
+        {
+            VoidedUsers.Add(user);
+            Users.Remove(user);
+        }
     }
 
     public void Join(User user)

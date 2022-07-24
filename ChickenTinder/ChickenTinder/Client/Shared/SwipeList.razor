@@ -57,6 +57,7 @@
         server.Room.WinningRestaurant = server.Room.GetRestaurant(restaurantId) ?? throw new Exception("not found");
         StateHasChanged();
         nav.NavigateTo($"/match/{server.Room.ID}");
+        Console.WriteLine("Matched!");
     }
 
     public async void OnSwipe(object? sender, SwipeDirection action)
