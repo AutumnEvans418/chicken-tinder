@@ -92,7 +92,7 @@ public class RoomService
         }
     }
 
-    public bool Vote(int roomId, string userId, string RestaurantId, int votes)
+    public bool Vote(int roomId, string userId, string RestaurantId, UserAction votes)
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
@@ -104,7 +104,7 @@ public class RoomService
                 Match match = new()
                 {
                     User = user,
-                    Vote = votes,
+                    Action = votes,
                     Restaurant = restaurant,
                 };
 

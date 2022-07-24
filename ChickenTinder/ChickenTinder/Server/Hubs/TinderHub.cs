@@ -29,7 +29,7 @@ public class TinderHub : Hub
         await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnStart");
     }
 
-    public async Task Like(int roomId, string RestaurantId, int votes)
+    public async Task Like(int roomId, string RestaurantId, UserAction votes)
     {
         if (_roomManager.Vote(roomId, Context.ConnectionId, RestaurantId, votes))
         {
