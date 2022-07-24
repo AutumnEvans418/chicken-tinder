@@ -74,7 +74,7 @@ window.Swipe = {
 
         initCards();
 
-        allCards.forEach(function (el) {
+        function setupCard(el) {
             var hammertime = new Hammer(el);
             hammertime.add(new Hammer.Pan({
                 position: Hammer.position_ALL,
@@ -98,7 +98,7 @@ window.Swipe = {
                 var yMulti = event.deltaY / 80;
                 var rotate = xMulti * yMulti;
 
-                event.target.style.transform = 'translate(' + event.deltaX + 'px, ' + event.deltaY + 'px) rotate(' + rotate + 'deg)';
+                el.style.transform = 'translate(' + event.deltaX + 'px, ' + event.deltaY + 'px) rotate(' + rotate + 'deg)';
             });
 
             hammertime.on('panend', function (event) {
@@ -111,17 +111,17 @@ window.Swipe = {
                 var moveOutWidth = document.body.clientWidth;
                 let distanceValue = 40;
                 let velocity = 0.1;
-                
+
                 var keep = (Math.abs(event.deltaX) < distanceValue
                     || Math.abs(event.velocityX) < velocity)
                     &&
                     (Math.abs(event.deltaY) < distanceValue
-                    || Math.abs(event.velocityY) < velocity);
+                        || Math.abs(event.velocityY) < velocity);
 
-                event.target.classList.toggle('removed', !keep);
+                el.classList.toggle('removed', !keep);
 
                 if (keep) {
-                    event.target.style.transform = '';
+                    el.style.transform = '';
                 } else {
                     var endX = Math.max(Math.abs(event.velocityX) * moveOutWidth, moveOutWidth);
                     var toX = event.deltaX > 0 ? endX : -endX;
@@ -131,13 +131,15 @@ window.Swipe = {
                     var yMulti = event.deltaY / 80;
                     var rotate = xMulti * yMulti;
 
-                    event.target.style.transform = 'translate(' + toX + 'px, ' + (toY + event.deltaY) + 'px) rotate(' + rotate + 'deg)';
+                    el.style.transform = 'translate(' + toX + 'px, ' + (toY + event.deltaY) + 'px) rotate(' + rotate + 'deg)';
                     swiped(event.direction);
                     initCards();
                 }
             });
-        });
+        }
 
+        allCards.forEach(setupCard);
+        
         
 
 
