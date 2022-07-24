@@ -30,7 +30,7 @@ else
                     <div class="card-body">
                         <h5 class="card-title">Restaurant Information</h5>
                         <p class="card-text text-center">
-                            <Card Restaurant="Room?.WinningRestaurant" />
+                            <Card Restaurant="WinningRestaurant" />
                         </p>
                     </div>
                 </div>
@@ -61,7 +61,7 @@ else
     public int RoomID { get; set; }
 
     private DiningRoom? Room { get; set; }
-    private Restaurant WinningRestaurant { get; set; }
+    private Restaurant? WinningRestaurant { get; set; }
     private string RestaurantName { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
