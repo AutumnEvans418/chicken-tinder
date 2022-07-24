@@ -104,7 +104,7 @@ window.Fireworks = {
         }
 
         // Create the overarching container
-        var container = document.createElement('div');
+        var container = document.getElementById('confetti');
         container.style.position = 'fixed';
         container.style.top = '0';
         container.style.left = '0';
