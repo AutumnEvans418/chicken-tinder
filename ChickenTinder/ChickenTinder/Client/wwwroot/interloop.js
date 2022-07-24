@@ -10,10 +10,10 @@
         navigator.share({ url: url });
     },
     getLocalStorage: (key) => {
-        return localStorage["key"];
+        return localStorage[key];
     },
-    SetLocalStorage: (key, value) => {
-        localStorage["key"] = value;
+    setLocalStorage: (key, value) => {
+        localStorage[key] = value;
     },
     LaunchMaps: (lat, long) => {
 

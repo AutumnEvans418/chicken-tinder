@@ -1,8 +1,10 @@
 ﻿@page "/match/{roomid:int}"
 @using ChickenTinder.Client.Data
+@using ChickenTinder.Client.Services
 @using ChickenTinder.Shared.Models
 @inject ServerConnection ServerConnection
 @inject NavigationManager NavMan
+@inject InterloopService _interloopService;
 
 @*<div class="pyro">
   <div class="before"></div>
@@ -31,7 +33,7 @@ else
                             <Card Restaurant="Room?.WinningRestaurant" />
                         </p>
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -75,7 +77,8 @@ else
 
     private void GetDirections()
     {
-        string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.ID}";
-        NavMan.NavigateTo(myUrl);
+        _interloopService.LaunchMaps(WinningRestaurant.Coordinates.Latitude.ToString(), WinningRestaurant.Coordinates.Longitude.ToString());
+        // string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.ID}";
+        // NavMan.NavigateTo(myUrl);
     }
 }
