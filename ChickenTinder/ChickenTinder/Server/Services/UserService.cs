@@ -25,7 +25,8 @@ namespace ChickenTinder.Client.Data
             var users = System.Text.Json.JsonSerializer.Deserialize<List<User>>(await File.ReadAllTextAsync(usersPath), options);
             if (users == null)
                 throw new Exception("users file not found");
-            var user = users.Where(p => alreadyUsedNames.Contains(p.Name) != true).ToList()[random.Next(0, users.Count - 1)];
+            users = users.Where(p => alreadyUsedNames.Contains(p.Name) != true).ToList();
+            var user = users[random.Next(0, users.Count - 1)];
             var colors = System.Text.Json.JsonSerializer.Deserialize<List<string>>(await File.ReadAllTextAsync(colorsPath), options);
             if (colors == null)
                 throw new Exception("colors file not found");

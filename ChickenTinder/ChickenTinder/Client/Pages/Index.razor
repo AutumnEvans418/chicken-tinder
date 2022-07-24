@@ -12,10 +12,10 @@
 
 <div class="footer">
     <div class="center-all">
-        <p>Host or Enter Code</p>
+        <p style="margin: 0px">Host or Enter Code</p>
     </div>
     <div class="center-all">
-        <input class="textbox" placeholder="Code" @bind-value="@Code" />
+        <input class="textbox" type="number" placeholder="Code" value="@Code" @oninput="e => Code = e.Value?.ToString()"/>
     </div>
     <div class="center-bottom">
         <button class="btn" @onclick="Join">@JoinText</button>
@@ -30,6 +30,7 @@
     {
         get => _code; set
         {
+
             if (!string.IsNullOrWhiteSpace(value))
             {
                 JoinText = "Join";

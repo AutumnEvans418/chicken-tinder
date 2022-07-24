@@ -70,6 +70,7 @@ html, body {
     border-radius: 5px;
     text-align: center;
     color: var(--textColor);
+    padding: 5px;
 }
 
 .center-bottom {
