@@ -1,4 +1,5 @@
-﻿using ChickenTinder.Shared.Models;
+﻿using ChickenTinder.Client.Services;
+using ChickenTinder.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
@@ -13,12 +14,15 @@ namespace ChickenTinder.Client.Data
 
         private readonly HubConnection _hubConnection;
         private readonly UserService userService;
+        private readonly InterloopService _interloopService;
 
-        public ServerConnection(NavigationManager NavigationManager, LocationService locationService, UserService userService)
+        public ServerConnection(NavigationManager NavigationManager, LocationService locationService, UserService userService, InterloopService interloop)
         {
+            _interloopService = interloop;
+
             _locationService = locationService;
 
-            _locationService.GetLocationAsync();
+            _ = _locationService.GetLocationAsync();
 
             _hubConnection = new HubConnectionBuilder()
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tinderhub"))
@@ -76,16 +80,25 @@ namespace ChickenTinder.Client.Data
 
             if (_user is null)
             {
+                var userId = await _interloopService.GetLocalStorage("ChickenTinder.UserId");
+                if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(_hubConnection.ConnectionId))
+                {
+                    userId = _hubConnection.ConnectionId;
+                    await _interloopService.SetLocalStorage("ChickenTinder.UserId", userId);
+                }
+
                 _user = await userService.GetRandomUser();
+                _user.SignalRConnection = userId ?? "NA";
                 _user.Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty;
                 _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
                 _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
             }
-                
         }
 
         public void SetName(string name)
         {
+            _ = _interloopService.SetLocalStorage("ChickenTinder.UserName", name);
+
             if (_user is not null)
                 _user.Name = name;
         }
