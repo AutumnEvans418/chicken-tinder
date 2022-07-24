@@ -1,6 +1,6 @@
 ﻿@page "/room"
-@page "/room/{Id}"
-@page "/room/{Id}/join/{UserId}"
+@page "/room/{Id:int}"
+@page "/room/{Id:int}/join/{UserId}"
 @using ChickenTinder.Client.Services
 @using ChickenTinder.Shared.Models
 @inject NavigationManager nav
@@ -8,27 +8,30 @@
 @inject IJSRuntime runtime
 @inject InterloopService _shareService;
 
-<h3 class="center-all">Dinning Room Code</h3>
-<h3 class="center-all" style="margin-bottom: 5%">@server.Room.ID <btn class="btn btn-small" @onclick="CopyTextToClipboard"><i class="fa-solid fa-clipboard"></i></btn> </h3>
-@foreach (var user in server.Room.Users)
+@if (server.HasRoom)
 {
-    <div class="center-all">
-        <p style="min-width: 300px;align-content: center; text-align: center; ;padding: 10px; border-radius: 5px; font-size: 20px; background-color: white">
-            <i class="@user.Class" style="@GetStyle(user.Color)"></i>
-            @user.Name
-            @if (server.CurrentUserId == @user.SignalRConnection)
-            {
-                <span> (You)</span>
-            }
-        </p>
-    </div>
-}
+    <h3 class="center-all">Dinning Room Code</h3>
+    <h3 class="center-all" style="margin-bottom: 5%">@server.Room.ID <btn class="btn btn-large" @onclick="Share"><i class="fa-solid fa-share"></i></btn> </h3>
+    @foreach (var user in server.Room.Users)
+    {
+        <div class="center-all">
+            <p style="min-width: 300px;align-content: center; text-align: center; ;padding: 10px; border-radius: 5px; font-size: 20px; background-color: white">
+                <i class="@user.Class" style="@GetStyle(user.Color)"></i>
+                @user.Name
+                @if (server.CurrentUserId == @user.SignalRConnection)
+                {
+                    <span> (You)</span>
+                }
+            </p>
+        </div>
+    }
 
-@if (server.IsHost)
-{
-    <div class="footer">
-        <button class="btn" @onclick="() => server.Start()">Start</button>
-    </div>
+    @if (server.IsHost)
+    {
+        <div class="footer">
+            <button class="btn" @onclick="() => server.Start()">Start</button>
+        </div>
+    }
 }
 @code {
 
@@ -37,10 +40,19 @@
         return $"margin-right: 5px; border-radius: 50%; background-color: #{color}; padding: 10px";
     }
 
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
-        if (server.HasRoom == false)
-            throw new Exception("impossible!");
+        if (!server.HasRoom)
+        {
+            if (Id.HasValue)
+            {
+                await server.JoinRoom(Id.Value);
+                StateHasChanged();
+            }
+        }
+
+        //if (server.HasRoom == false)
+        //    throw new Exception("impossible!");
 
         server.OnJoin += UserJoined;
         server.OnLeave += UserLeft;
@@ -68,6 +80,9 @@
     public int? UserId { get; set; }
     [Parameter]
     public int? Id { get; set; }
+
+
+
     public void Start()
     {
         nav.NavigateTo("/swipe");
