@@ -96,7 +96,6 @@ else
 
     private void GoToYelp()
     {
-        string myUrl = $"https://www.yelp.com/map/{WinningRestaurant.Alias}";
-        NavMan.NavigateTo(myUrl);
+        _= _js.InvokeAsync<object>("open", $"https://www.yelp.com/map/{WinningRestaurant.Alias}", "_blank");
     }
 }
