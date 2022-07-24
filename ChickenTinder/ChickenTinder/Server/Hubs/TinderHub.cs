@@ -20,7 +20,7 @@ public class TinderHub : Hub
     public async Task<DiningRoom?> JoinRoom(int roomId, User user)
     {
         await InvokeJoin(roomId, user);
-        return _roomManager.JoinRoom(user, roomId);
+        return await _roomManager.JoinRoom(user, roomId);
     }
 
     public async Task StartRoom(int roomId)

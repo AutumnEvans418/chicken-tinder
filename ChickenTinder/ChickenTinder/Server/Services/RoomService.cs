@@ -1,16 +1,19 @@
-﻿namespace ChickenTinder.Server.Services;
+﻿using ChickenTinder.Client.Data;
+
+namespace ChickenTinder.Server.Services;
 
 public class RoomService
 {
     private readonly RestaurantService _reastaurantService;
     private readonly MatchService _matchService;
-
+    private readonly UserService userService;
     private readonly Dictionary<int, DiningRoom> _rooms = new();
 
 
-    public RoomService(RestaurantService restaurantService, MatchService match)
+    public RoomService(RestaurantService restaurantService, MatchService match, UserService userService)
     {
         _matchService = match;
+        this.userService = userService;
         _reastaurantService = restaurantService;
     }
 
@@ -26,7 +29,10 @@ public class RoomService
     public async Task<DiningRoom?> CreateRoom(User user)
     {
         if (user is null) return null;
+        var data = await userService.GetRandomUser(new List<string>());
 
+        user.Name = data.Name;
+        user.Class = data.Class;
         var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude) 
                                             ? await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude) 
                                             : await _reastaurantService.GetRestaurants(user.Location);
@@ -47,10 +53,13 @@ public class RoomService
         return null;
     }
 
-    public DiningRoom? JoinRoom(User user, int roomId)
+    public async Task<DiningRoom?> JoinRoom(User user, int roomId)
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
+            var data = await userService.GetRandomUser(room.Users.Select(p => p.Name).ToList());
+            user.Name = data.Name;
+            user.Class = data.Class;
             room.Join(user);
             return room;
         }

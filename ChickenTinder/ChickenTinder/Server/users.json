@@ -1,0 +1,67 @@
+[
+  {
+    "name": "bacon",
+    "class": "fa-solid fa-bacon"
+  },
+  {
+    "name": "bread",
+    "class": "fa-solid fa-bread-slice"
+  },
+  {
+    "name": "bowl",
+    "class": "fa-solid fa-bowl-food"
+  },
+  {
+    "name": "burger",
+    "class": "fa-solid fa-burger"
+  },
+  {
+    "name": "egg",
+    "class": "fa-solid fa-egg"
+  },
+  {
+    "name": "apple-whole",
+    "class": "fa-solid fa-apple-whole"
+  },
+  {
+    "name": "carrot",
+    "class": "fa-solid fa-carrot"
+  },
+  {
+    "name": "cookie",
+    "class": "fa-solid fa-cookie"
+  },
+  {
+    "name": "cheese",
+    "class": "fa-solid fa-cheese"
+  },
+  {
+    "name": "fish",
+    "class": "fa-solid fa-fish"
+  },
+  {
+    "name": "ice cream",
+    "class": "fa-solid fa-ice-cream"
+  },
+  {
+    "name": "pizza",
+    "class": "fa-solid fa-pizza-slice"
+  },
+  {
+    "name": "pepper",
+    "class": "fa-solid fa-pepper-hot"
+  },
+  {
+    "name": "wine",
+    "class": "fa-solid fa-wine-glass"
+  },
+  {
+    "name": "hotdog",
+    "class": "fa-solid fa-hotdog"
+  },
+  {
+    "name": "cake",
+    "class": "fa-cake-candles"
+  }
+
+]

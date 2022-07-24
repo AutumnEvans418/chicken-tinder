@@ -1,3 +1,4 @@
+using ChickenTinder.Client.Data;
 using ChickenTinder.Server.Hubs;
 using ChickenTinder.Server.Services;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -20,6 +21,8 @@ builder.Services.AddHttpClient("YelpClient", x=>
 builder.Services.AddSingleton<RoomService>();
 builder.Services.AddSingleton<MatchService>();
 builder.Services.AddSingleton<RestaurantService>();
+builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<HttpClient>();
 
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(opts =>
