@@ -73,6 +73,8 @@ else
             WinningRestaurant = Room.WinningRestaurant;
             RestaurantName = Room.WinningRestaurant.Name;
         }
+
+        await ServerConnection.LeaveRoom();
     }
 
     private void GetDirections()
