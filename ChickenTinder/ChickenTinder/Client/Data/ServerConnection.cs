@@ -7,13 +7,18 @@ namespace ChickenTinder.Client.Data
 {
     public class ServerConnection : IAsyncDisposable
     {
+        private readonly LocationService _locationService;
         private DiningRoom? _room = null;
         private User? _user;
 
         private readonly HubConnection _hubConnection;
 
-        public ServerConnection(NavigationManager NavigationManager)
+        public ServerConnection(NavigationManager NavigationManager, LocationService locationService)
         {
+            _locationService = locationService;
+
+            _locationService.GetLocationAsync();
+
             _hubConnection = new HubConnectionBuilder()
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tinderhub"))
                                 .Build();
@@ -69,9 +74,16 @@ namespace ChickenTinder.Client.Data
             if (_user is null)
                 _user = new()
                 {
-                    Name = "Tommy",
+                    Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty,
+                    Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty,
                     SignalRConnection = _hubConnection.ConnectionId ?? "NA"
                 };
+        }
+
+        public void SetName(string name)
+        {
+            if (_user is not null)
+                _user.Name = name;
         }
 
         public async Task CreateRoom(string location = "Kansas City")

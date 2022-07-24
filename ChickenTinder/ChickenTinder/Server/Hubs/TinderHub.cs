@@ -52,6 +52,11 @@ public class TinderHub : Hub
         return  _roomManager.GetRoom(id);
     }
 
+    public void SetUserVoid(int roomId, string userId)
+    {
+         _roomManager.SetUserVoid(roomId, userId);
+    }
+
 
 
     private async Task InvokeMatch(int roomId, string RestaurantId)

@@ -26,6 +26,20 @@ public class RestaurantService
         return output;
     }
 
+
+    public async Task<List<Restaurant>?> GetRestaurants(string latitude, string longitude)
+    {
+        var output = _cache.Get<List<Restaurant>>(latitude + longitude);
+
+        if (output is null)
+        {
+            output = (await _httpClient.GetFromJsonAsync<YelpResponce>("search?term=delis&latitude=" + latitude + "& longitude=-" + longitude))?.Businesses;
+            _cache.Set(latitude + longitude, output, TimeSpan.FromMinutes(15));
+        }
+
+        return output;
+    }
+
     public async Task<Restaurant?> GetRestaurant(string id)
     {
         var output = _cache.Get<Restaurant>(id);
