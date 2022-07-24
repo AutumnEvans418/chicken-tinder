@@ -69,12 +69,11 @@ else
         Room = await ServerConnection.GetRoom(RoomID);
         if (Room != null && Room?.WinningRestaurant != null)
         {
-            Room = ServerConnection.Room;
             WinningRestaurant = Room.WinningRestaurant;
             RestaurantName = Room.WinningRestaurant.Name;
         }
 
-        await ServerConnection.LeaveRoom();
+        //await ServerConnection.LeaveRoom();
     }
 
     private void GetDirections()
