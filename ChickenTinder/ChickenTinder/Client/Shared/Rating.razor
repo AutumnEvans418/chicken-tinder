@@ -1,0 +1,17 @@
+﻿
+@for (int i = 0; i < 5; i++)
+{
+    if(Value >= i)
+    {
+        <i class="fa-solid fa-star checked" style="padding: 0px"></i>
+    }
+    else
+    {
+        <i class="fa-solid fa-star" style="padding: 0px"></i>
+    }
+}
+
+@code {
+    [Parameter]
+    public float Value { get; set; }
+}
