@@ -14,7 +14,7 @@
 
         @foreach (var item in Restaurants)
         {
-            <div class="tinder--card">
+            <div class="tinder--card" style="transform:none">
                 <Card Restaurant="@item"></Card>
             </div>
         }
@@ -47,11 +47,12 @@
                 throw new Exception("room cannot be null");
 
             server.OnMatch += Matched;
-            Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
+            Restaurants = server.Room?.Restaurants.Take(3).ToList() ?? new List<Restaurant>();
             swipesRemaining = Restaurants.Count;
             Console.WriteLine($"Swipes Remaining: {swipesRemaining}");
             StateHasChanged();
         }
+        Console.WriteLine("blazore re-rendered");
         await interop.Start();
     }
 
@@ -66,10 +67,13 @@
     }
 
     public async void OnSwipe(object? sender, SwipeDirection action)
-    {        
+    {
         Console.WriteLine("I am being clicked");
         Console.WriteLine(action);
-        var restaurant = Restaurants.First();
+        var restaurant = Restaurants.FirstOrDefault();
+
+        if (restaurant == null)
+            return;
 
         Restaurants.Remove(restaurant);
 
@@ -88,7 +92,7 @@
         if (action == SwipeDirection.Left)
         {
             Restaurants.Add(restaurant);
-            StateHasChanged();
+            
             Console.WriteLine($"{restaurant.Name} added back to list");
         }
         Console.WriteLine($"Restaurant Count: {Restaurants.Count}");
@@ -106,7 +110,9 @@
                 }
             }
         }
-        
+        StateHasChanged();
+
+
     }
 
     private void ResetListCount()
