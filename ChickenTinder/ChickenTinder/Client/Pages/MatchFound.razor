@@ -3,33 +3,47 @@
 @using ChickenTinder.Shared.Models
 @inject ServerConnection ServerConnection
 
-<div class="alert alert-success text-center fa-2xl" role="alert">
-  It's a Match! <i class="fa-solid fa-champagne-glasses"></i>
-</div>
-<div class="pyro">
+
+@*<div class="pyro">
   <div class="before"></div>
     <Card Restaurant="Room?.WinningRestaurant" />
   <div class="after"></div>
-</div>
+</div>*@
 
-<div class="container text-center">
-    <div class="row justify-content-center">
-        <div class="col-8">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Let's Go to @RestaurantName!</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Great choice! Now let's do this!</h6>
-                    <p class="card-text text-center">
-                        <i class="fa-solid fa-burger fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
-                        <i class="fa-solid fa-bowl-rice fa-2xl"></i> <i class="fa-solid fa-heart pe-3"></i>
-                        <i class="fa-solid fa-mug-hot fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
-                    </p>
-                    <button type="button" class="btn btn-primary">Get Directions</button>
+@if (Room?.WinningRestaurant == null)
+{
+    <div class="alert alert-info text-center fa-2xl" role="alert">
+        Hang on, we are getting your restaurant ready... <i class="fa-solid fa-thumbs-up"></i>
+    </div>
+}
+else
+{
+    <div class="alert alert-success text-center fa-2xl" role="alert">
+        It's a Match! <i class="fa-solid fa-champagne-glasses"></i>
+    </div>
+
+    <Card Restaurant="Room?.WinningRestaurant" />
+
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Let's Go to @RestaurantName!</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Great choice! Now let's do this!</h6>
+                        <p class="card-text text-center">
+                            <i class="fa-solid fa-burger fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
+                            <i class="fa-solid fa-bowl-rice fa-2xl"></i> <i class="fa-solid fa-heart pe-3"></i>
+                            <i class="fa-solid fa-mug-hot fa-2xl"></i> <i class="fa-solid fa-thumbs-up pe-3"></i>
+                        </p>
+                        <button type="button" class="btn btn-primary">Get Directions</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+}
+
 
 @code {
     [Parameter]
@@ -37,6 +51,7 @@
 
     private DiningRoom? Room { get; set; }
     private string RestaurantName { get; set; } = "";
+    private Restaurant WinningRestaurant { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,6 +59,8 @@
         if (Room != null)
         {
             Room = ServerConnection.Room;
+            
+            WinningRestaurant = Room?.WinningRestaurant;
             RestaurantName = Room?.WinningRestaurant?.Name == null ? "" : Room.WinningRestaurant.Name;
         }
     }
