@@ -1,13 +1,15 @@
 ﻿@page "/room"
 @page "/room/{Id}"
 @page "/room/{Id}/join/{UserId}"
+@using ChickenTinder.Client.Services
 @using ChickenTinder.Shared.Models
 @inject NavigationManager nav
 @inject ServerConnection server
 @inject IJSRuntime runtime
+@inject InterloopService _shareService;
 
-<h3 class="center-all">Dinning Room Code</h3>
-<h3 class="center-all" style="margin-bottom: 5%">@server.Room.ID</h3>
+<h3 class="center-all" @onclick="Share">Dinning Room Code</h3>
+<h3 class="center-all" @onclick="Share" style="margin-bottom: 5%">@server.Room.ID</h3>
 @foreach (var user in server.Room.Users)
 {
     <div class="center-all">
@@ -43,7 +45,10 @@
         server.OnJoin += UserJoined;
         server.OnLeave += UserLeft;
         server.OnStart += Start;
+
+
         base.OnInitialized();
+
     }
 
     public void UserJoined(User user)
@@ -66,5 +71,13 @@
     public void Start()
     {
         nav.NavigateTo("/swipe");
+    }
+
+    private async Task Share()
+    {
+        if (server.Room is not null)
+        {
+            await _shareService.ShareUrl(nav.BaseUri + "room/" + server.Room.ID);
+        }
     }
 }
