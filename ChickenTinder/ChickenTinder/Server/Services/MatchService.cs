@@ -2,24 +2,22 @@
 
 public class MatchService
 {
-    public bool CheckForMatch(DiningRoom room, Match? match = null)
+    public bool CheckForMatch(DiningRoom room, Match? match)
     {
+        if (match?.Restaurant?.ID == null) throw new ArgumentNullException(nameof(match));
+
         bool matchFound = false;
         int userMaxSwipeCount = 0;        
         int userMatches = 0;
 
-        if (match?.Restaurant?.ID == null)
+        userMaxSwipeCount = room.Users.Where(u => u.MaxSwipesReached).Count();
+        
+        if (!room.Matches.Any(m => m.Restaurant.ID == match.Restaurant.ID))
         {
-            userMaxSwipeCount = room.Users.Where(u => u.MaxSwipesReached).Count();
-        } else
-        {
-            if (!room.Matches.Any(m => m.Restaurant.ID == match.Restaurant.ID))
-            {
-                room.Matches.Add(match);
-            }            
+            room.Matches.Add(match);
+        }            
             
-            userMatches = room.Matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID && m.Vote <= 3).Count();            
-        }
+        userMatches = room.Matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID && m.Vote > 1).Count();
 
         if (userMaxSwipeCount >= room.Users.Count)
         {            
