@@ -28,7 +28,7 @@ public class RoomService
         if (user is null) return null;
 
         var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude) 
-                                            ? await _reastaurantService.GetRestaurants(user.Longitude, user.Latitude) 
+                                            ? await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude) 
                                             : await _reastaurantService.GetRestaurants(user.Location);
         if (locations is not null)
         {
