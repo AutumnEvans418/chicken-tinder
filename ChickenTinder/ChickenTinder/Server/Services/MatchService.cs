@@ -18,18 +18,19 @@ public class MatchService
                 room.Matches.Add(match);
             }            
             
-            userMatches = room.Matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID).Count();            
+            userMatches = room.Matches.Where(m => m.Restaurant?.ID == match.Restaurant.ID && m.Vote <= 3).Count();            
         }
 
         if (userMaxSwipeCount >= room.Users.Count)
-        {
-            matchFound = true;
-            room.WinningRestaurant = match.Restaurant;
+        {            
+            //find winning restaurant based on most votes and least distance
+            room.WinningRestaurant = room.Matches.OrderByDescending(m => m.Vote).OrderBy(m => m.Restaurant.Distance).FirstOrDefault().Restaurant;
+            matchFound = true;            
         }
         else if (userMaxSwipeCount + userMatches >= room.Users.Count)
         {
-            //find winning restaurant based on most votes and least distance
-            room.WinningRestaurant = room.Matches.OrderByDescending(m => m.Vote).OrderBy(m => m.Restaurant.Distance).FirstOrDefault().Restaurant;
+            room.WinningRestaurant = match.Restaurant;
+            matchFound = true;
         }
 
         return matchFound;
