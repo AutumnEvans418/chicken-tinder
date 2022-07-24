@@ -15,10 +15,10 @@ function handleMaybe(el) {
     console.log("was maybe");
     el.classList.remove('removed');
     let tinderCards = document.querySelector('.tinder--cards');
-    let first = tinderCards.firstChild;
+    let card = tinderCards.querySelector('.tinder--card:not(.removed)');
     //console.log(first);
-    tinderCards.removeChild(first);
-    tinderCards.appendChild(first);
+    tinderCards.removeChild(card);
+    tinderCards.appendChild(card);
     el.style.transform = '';
 }
 
@@ -43,9 +43,8 @@ function createButtonListener(love) {
         } else if (love == Hammer.DIRECTION_DOWN) {
             card.style.transform = 'translate(-100px, ' + moveOutWidth + 'px) rotate(-10deg)';
         }
-        swiped(love);
         window.Swipe.initCards();
-
+        swiped(love);
         event.preventDefault();
     };
 }
@@ -154,8 +153,8 @@ window.Swipe = {
                         el.style.transform = 'translate(' + toX + 'px, ' + (toY + event.deltaY) + 'px) rotate(' + rotate + 'deg)';
                     }
 
-                    swiped(event.direction);
                     initCards();
+                    swiped(event.direction);
                 }
             });
         }
