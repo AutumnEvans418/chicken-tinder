@@ -1,4 +1,5 @@
-﻿using ChickenTinder.Shared.Models;
+﻿using ChickenTinder.Client.Services;
+using ChickenTinder.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
@@ -10,14 +11,17 @@ namespace ChickenTinder.Client.Data
         private readonly LocationService _locationService;
         private DiningRoom? _room = null;
         private User? _user;
-
+        
         private readonly HubConnection _hubConnection;
+        private readonly InterloopService _interloopService;
 
-        public ServerConnection(NavigationManager NavigationManager, LocationService locationService)
+        public ServerConnection(NavigationManager NavigationManager, LocationService locationService,  InterloopService interloop)
         {
+            _interloopService = interloop;
+
             _locationService = locationService;
 
-            _locationService.GetLocationAsync();
+            _ = _locationService.GetLocationAsync();
 
             _hubConnection = new HubConnectionBuilder()
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tinderhub"))
@@ -31,7 +35,7 @@ namespace ChickenTinder.Client.Data
 
             _hubConnection.On<User>("OnJoin", (x) =>
             {
-                if (HasRoom)
+                if (HasRoom && x.SignalRConnection != CurrentUserId)
                     Room.Users.Add(x);
                 OnJoin?.Invoke(x);
             });
@@ -61,11 +65,6 @@ namespace ChickenTinder.Client.Data
         public event Action<User>? OnLeave;
 
 
-        /// <summary>
-        /// Connect the SignalR Service and create the User
-        /// </summary>
-        /// <param name="location">The location of the User. Zip or City name</param>
-        /// <returns></returns>
         private async Task Connect()
         {
             if (_hubConnection.State is not HubConnectionState.Disconnected)
@@ -75,18 +74,19 @@ namespace ChickenTinder.Client.Data
 
             if (_user is null)
             {
-                _user = new User();
+                var userId = await _interloopService.GetLocalStorage("UserId");
+                if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(_hubConnection.ConnectionId))
+                {
+                    userId = _hubConnection.ConnectionId;
+                    await _interloopService.SetLocalStorage("UserId", userId);
+                }
+
+                _user = new();
+                _user.SignalRConnection = userId ?? "NA";
                 _user.Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty;
                 _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
                 _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
             }
-                
-        }
-
-        public void SetName(string name)
-        {
-            if (_user is not null)
-                _user.Name = name;
         }
 
         public async Task CreateRoom(string location = "Kansas City")
@@ -113,7 +113,6 @@ namespace ChickenTinder.Client.Data
             if (_hubConnection is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, _user);
-                
             }
         }
 
@@ -158,6 +157,15 @@ namespace ChickenTinder.Client.Data
 
         }
 
+        public async Task SetPickyUser(int roomId, string userId)
+        {
+            await Connect();
+
+            if (_hubConnection is not null && _room is not null)
+            {
+                await _hubConnection.InvokeAsync("SetPickyUser", roomId, userId);
+            }            
+        }
 
         public async ValueTask DisposeAsync()
         {

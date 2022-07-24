@@ -68,6 +68,14 @@ public class RoomService
         return null;
     }
 
+    public void SetPickyUser(int roomId, string userId)
+    {
+        if (_rooms.TryGetValue(roomId, out var room))
+        {
+            room.SetPickyUser(userId);
+        }
+    }
+
     public void LeaveRoom(User user, int roomId)
     {
         if (_rooms.TryGetValue(roomId, out var room))

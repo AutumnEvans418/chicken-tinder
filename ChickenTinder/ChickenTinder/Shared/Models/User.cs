@@ -15,6 +15,7 @@ namespace ChickenTinder.Shared.Models
         public string Name { get; set; } = string.Empty;
         public string? Class { get; set; }
         public string? Color { get; set; }
+        public bool MaxSwipesReached { get; set; }
 
         public string Style => $"color: #{Color}";
     }

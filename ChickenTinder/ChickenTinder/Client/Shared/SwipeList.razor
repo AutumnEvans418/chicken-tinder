@@ -33,6 +33,9 @@
 
     public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
     private SwipeJsInterop interop;
+    private int listsRemaining = 2;
+    private int swipesRemaining;
+
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -45,6 +48,8 @@
 
             server.OnMatch += Matched;
             Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
+            swipesRemaining = Restaurants.Count;
+            Console.WriteLine($"Swipes Remaining: {swipesRemaining}");
             StateHasChanged();
         }
         await interop.Start();
@@ -54,14 +59,14 @@
     {
         if (server.Room == null)
             throw new Exception("");
-        server.Room.WinningRestaurant = server.Room.GetRestaurant(restaurantId) ?? throw new Exception("not found");
+        //server.Room.WinningRestaurant = server.Room.GetRestaurant(restaurantId) ?? throw new Exception("not found");
         StateHasChanged();
         nav.NavigateTo($"/match/{server.Room.ID}");
         Console.WriteLine("Matched!");
     }
 
     public async void OnSwipe(object? sender, SwipeDirection action)
-    {
+    {        
         Console.WriteLine("I am being clicked");
         Console.WriteLine(action);
         var restaurant = Restaurants.First();
@@ -84,6 +89,30 @@
         {
             Restaurants.Add(restaurant);
             StateHasChanged();
+            Console.WriteLine($"{restaurant.Name} added back to list");
         }
+        Console.WriteLine($"Restaurant Count: {Restaurants.Count}");
+        swipesRemaining--;
+        Console.WriteLine($"Swipes Remaining: {swipesRemaining}");
+        if (swipesRemaining == 0)
+        {
+            ResetListCount();
+            if (listsRemaining == 0)
+            {
+                if (server?.Room != null)
+                {
+                    await server.SetPickyUser(server.Room.ID, server.CurrentUserId);
+                    Matched(restaurant.ID);
+                }
+            }
+        }
+        
+    }
+
+    private void ResetListCount()
+    {
+        swipesRemaining = Restaurants.Count;
+        listsRemaining--;
+        Console.WriteLine($"Swipes Remaining: {listsRemaining}");
     }
 }

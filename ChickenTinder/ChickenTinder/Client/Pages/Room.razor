@@ -22,7 +22,14 @@
     @if (server.IsHost)
     {
         <div class="footer">
-            <button class="btn" @onclick="() => server.Start()">Start</button>
+            @if (server.Room.Users.Count > 1)
+            {
+                <button class="btn" @onclick="() => server.Start()">Start</button>
+            }
+            else
+            {
+                <button disabled class="btn" @onclick="() => server.Start()">Start</button>
+            }
         </div>
     }
 }

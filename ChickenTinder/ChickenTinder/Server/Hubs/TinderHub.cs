@@ -37,6 +37,11 @@ public class TinderHub : Hub
         }
     }
 
+    public async Task SetPickyUser(int roomId, string userId)
+    {
+        _roomManager.SetPickyUser(roomId, userId);
+    }
+
     public async Task LeaveRoom(User user, int roomId)
     {
         _roomManager.LeaveRoom(user, roomId);
