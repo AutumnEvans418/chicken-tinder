@@ -11,18 +11,11 @@
 @if (server.HasRoom)
 {
     <h3 class="center-all">Dinning Room Code</h3>
-    <h3 class="center-all" style="margin-bottom: 5%;">@server.Room.ID <btn class="btn btn-small" @onclick="Share"><i class="fa-solid fa-share"></i></btn> </h3>
-    @foreach (var user in server.Room.Users)
+    <h3 class="center-all" style="margin-bottom: 5%;">@server.Room?.ID <btn class="btn btn-small" @onclick="Share"><i class="fa-solid fa-share"></i></btn> </h3>
+    @foreach (var user in server.Room?.Users ?? new List<User>())
     {
-        <div class="center-all">
-            <p style="min-width: 300px;align-content: center; text-align: center; ;padding: 10px; border-radius: 5px; font-size: 20px; background-color: white">
-                <i class="@user.Class" style="@GetStyle(user.Color)"></i>
-                @user.Name
-                @if (server.CurrentUserId == @user.SignalRConnection)
-                {
-                    <span> (You)</span>
-                }
-            </p>
+        <div class="center-all" style="margin: 10px">
+            <UserBadge Width="80" IsYou="@(server.CurrentUserId == user.SignalRConnection)" ShowName="true" User="user"></UserBadge>
         </div>
     }
 
@@ -44,7 +37,7 @@
 
     public string GetStyle(string color)
     {
-        return $"margin-right: 5px; border-radius: 50%; background-color: #{color}; padding: 10px";
+        return $"margin-right: 5px; border-radius: 50%; background-color: #{color}; padding: 10px;";
     }
 
     protected async override void OnInitialized()
@@ -81,7 +74,7 @@
     }
     private async Task CopyTextToClipboard()
     {
-        await runtime.InvokeVoidAsync("clipboardCopy.copyText", server.Room.ID);
+        await runtime.InvokeVoidAsync("clipboardCopy.copyText", server.Room?.ID);
     }
     [Parameter]
     public int? UserId { get; set; }

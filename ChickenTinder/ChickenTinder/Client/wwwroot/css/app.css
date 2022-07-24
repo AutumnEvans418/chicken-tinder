@@ -14,13 +14,9 @@
     --starColor: var(--corn);
     --btnTextColor: white;
     --placeHolder: var(--textColor);
-    --color-light-red: #F8CECC;
-    --color-light-blue: #DAE8FC;
-    --color-light-green: #D5E8D4;
-    --color-light-orange: #FFE6CC;
-    --color-light-yellow: #FFF2CC;
-    --color-light-purple: #E1D5E7
+
 }
+
 
 html, body {
     background-color: var(--backgroundColor);
@@ -73,6 +69,11 @@ html, body {
     padding: 5px;
 }
 
+.flex-right {
+    display: flex;
+    justify-content: end;
+}
+
 .center-bottom {
     text-align: center;
     display: flex;
@@ -85,6 +86,13 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.header-right {
+    transform: translate(-50,50%);
+    position: fixed;
+    top: 20px;
+    left: 20px;
 }
 
 .footer {

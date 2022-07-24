@@ -11,6 +11,16 @@ window.clipboardCopy = {
             });
     }
 };
+function handleMaybe(el) {
+    console.log("was maybe");
+    el.classList.remove('removed');
+    let tinderCards = document.querySelector('.tinder--cards');
+    let first = tinderCards.firstChild;
+    //console.log(first);
+    tinderCards.removeChild(first);
+    tinderCards.appendChild(first);
+    el.style.transform = '';
+}
 
 function createButtonListener(love) {
     return function (event) {
@@ -26,7 +36,8 @@ function createButtonListener(love) {
         if (love == Hammer.DIRECTION_RIGHT) {
             card.style.transform = 'translate(' + moveOutWidth + 'px, -100px) rotate(-30deg)';
         } else if (love == Hammer.DIRECTION_LEFT) {
-            card.style.transform = 'translate(-' + moveOutWidth + 'px, -100px) rotate(30deg)';
+            handleMaybe(card);
+            //card.style.transform = 'translate(-' + moveOutWidth + 'px, -100px) rotate(30deg)';
         } else if (love == Hammer.DIRECTION_UP) {
             card.style.transform = 'translate(-100px, -' + moveOutWidth + 'px) rotate(10deg)';
         } else if (love == Hammer.DIRECTION_DOWN) {
@@ -48,9 +59,13 @@ function swiped(direction) {
     dotRef.invokeMethodAsync("Swipe", direction);
 }
 
+
 window.Swipe = {
     initCards: () => {
+        allCards = document.querySelectorAll('.tinder--card');
+
         var newCards = document.querySelectorAll('.tinder--card:not(.removed)');
+        console.log("updating cards " + newCards.length);
 
         newCards.forEach(function (card, index) {
             card.style.zIndex = allCards.length - index;
@@ -73,6 +88,7 @@ window.Swipe = {
         }
 
         initCards();
+        console.log("javascript re-rendering " + allCards.length);
 
         function setupCard(el) {
             var hammertime = new Hammer(el);
@@ -118,6 +134,7 @@ window.Swipe = {
                     (Math.abs(event.deltaY) < distanceValue
                         || Math.abs(event.velocityY) < velocity);
 
+                let isMaybe = event.direction == Hammer.DIRECTION_LEFT;
                 el.classList.toggle('removed', !keep);
 
                 if (keep) {
@@ -131,7 +148,12 @@ window.Swipe = {
                     var yMulti = event.deltaY / 80;
                     var rotate = xMulti * yMulti;
 
-                    el.style.transform = 'translate(' + toX + 'px, ' + (toY + event.deltaY) + 'px) rotate(' + rotate + 'deg)';
+                    if (isMaybe) {
+                        handleMaybe(el);
+                    } else {
+                        el.style.transform = 'translate(' + toX + 'px, ' + (toY + event.deltaY) + 'px) rotate(' + rotate + 'deg)';
+                    }
+
                     swiped(event.direction);
                     initCards();
                 }
@@ -139,10 +161,6 @@ window.Swipe = {
         }
 
         allCards.forEach(setupCard);
-        
-        
-
-
 
         like.removeEventListener('click', likeListener);
         dislike.removeEventListener('click', dislikeListener);
