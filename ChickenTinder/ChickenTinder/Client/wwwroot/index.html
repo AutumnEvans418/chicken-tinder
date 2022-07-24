@@ -4,18 +4,21 @@
 <head>
     <style>
         #spinner {
-            border: 16px solid silver;
-            border-top: 16px solid #337AB7;
+            border: 16px solid #9b2915ff;
             border-radius: 50%;
-            width: 200px;
-            height: 200px;
+            width: 100px;
+            height: 100px;
             animation: spin 1500ms linear infinite;
-            
             transform: translate(-50%,50%);
-            left: 50%;
+            left: 75px;
+            top: 75px;
             position: absolute;
-            margin-top: 20px
         }
+
+            #spinner img {
+                margin-top: -14px;
+                margin-left: -14px;
+            }
 
         @keyframes spin {
             0% {
@@ -44,7 +47,7 @@
 <body>
     <div id="app">
         <div id="spinner">
-            <img src="/icon-192.png" />
+            <img m src="/icon-96.png" />
         </div>
     </div>
 
