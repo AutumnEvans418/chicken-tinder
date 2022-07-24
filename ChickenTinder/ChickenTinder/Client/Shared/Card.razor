@@ -1,33 +1,24 @@
 ﻿@using ChickenTinder.Shared.Models
 <div>
-    <p class="center">@Restaurant.Name</p>
-    <img src="@Restaurant.Image_Url" draggable="false" class="unselectable card-image"  />
-    <table class="table">
-        <tr>
-            <td style="text-align: left">@Restaurant.Review_Count Reviews</td>
-            <td style="text-align: right">@Restaurant.Review_Count Reviews</td>
-        </tr>
-        <tr>
-            <td style="text-align: left"><i class="fa-solid fa-location-pin"></i> @(Math.Round( Restaurant.Distance/5280,2)) Miles</td>
-            <td style="text-align: right">
-                @foreach (var address in Restaurant.Location.Display_Address)
-                {
-                    <p>@address</p>
-                }
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: left">
-                @if (Restaurant.Is_Closed != true)
-                {
-                    <span>Open Now</span>
-                }
-            </td>
-            <td style="text-align: right">
-                @Restaurant.Price
-            </td>
-        </tr>
-    </table>
+    <img src="@Restaurant.Image_Url" draggable="false" class="unselectable card-image" />
+    <h3 class="center" style="margin-top: 10px">@Restaurant.Name</h3>
+    <div class="m-3">
+        <table class="table">
+            <tr>
+                <td style="text-align: left">@Restaurant.Review_Count Reviews</td>
+                <td style="text-align: right">
+                    <Rating Value="@Restaurant.Rating"></Rating>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left"><i class="fa-solid fa-location-pin"></i> @(Math.Round( Restaurant.Distance/5280,2)) Miles</td>
+                <td style="text-align: right">
+                    @Restaurant.Price
+                </td>
+            </tr>
+        </table>
+    </div>
+
 </div>
 @code {
     [Parameter]
