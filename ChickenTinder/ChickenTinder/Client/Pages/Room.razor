@@ -76,7 +76,7 @@
     }
     private async Task CopyTextToClipboard()
     {
-        await runtime.InvokeVoidAsync("clipboardCopy.copyText", server.Room?.ID);
+     //   await _js.InvokeVoidAsync("clipboardCopy.copyText", server.Room?.ID);
     }
     [Parameter]
     public int? UserId { get; set; }
