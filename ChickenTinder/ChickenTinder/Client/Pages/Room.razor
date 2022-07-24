@@ -7,7 +7,7 @@
 @inject IJSRuntime runtime
 
 <h3 class="center-all">Dinning Room Code</h3>
-<h3 class="center-all" style="margin-bottom: 5%">@server.Room.ID</h3>
+<h3 class="center-all" style="margin-bottom: 5%">@server.Room.ID <btn class="btn btn-small" @onclick="CopyTextToClipboard"><i class="fa-solid fa-clipboard"></i></btn> </h3>
 @foreach (var user in server.Room.Users)
 {
     <div class="center-all">
