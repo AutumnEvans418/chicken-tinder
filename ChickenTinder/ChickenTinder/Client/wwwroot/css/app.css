@@ -14,6 +14,12 @@
     --starColor: var(--corn);
     --btnTextColor: white;
     --placeHolder: var(--textColor);
+    --color-light-red: #F8CECC;
+    --color-light-blue: #DAE8FC;
+    --color-light-green: #D5E8D4;
+    --color-light-orange: #FFE6CC;
+    --color-light-yellow: #FFF2CC;
+    --color-light-purple: #E1D5E7
 }
 
 html, body {
@@ -64,6 +70,7 @@ html, body {
     border-radius: 5px;
     text-align: center;
     color: var(--textColor);
+    padding: 5px;
 }
 
 .center-bottom {
@@ -91,9 +98,9 @@ h1 {
     color: var(--titleColor);
 }
 
-h1:focus {
-    outline: none;
-}
+    h1:focus {
+        outline: none;
+    }
 
 a, .btn-link {
     color: #0071c1;
@@ -149,4 +156,3 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
-

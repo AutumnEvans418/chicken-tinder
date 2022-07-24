@@ -13,10 +13,9 @@ namespace ChickenTinder.Client.Data
         private User? _user;
 
         private readonly HubConnection _hubConnection;
-        private readonly UserService userService;
-        private readonly InterloopService _interloopService;
 
         public ServerConnection(NavigationManager NavigationManager, LocationService locationService, UserService userService, InterloopService interloop)
+        public ServerConnection(NavigationManager NavigationManager, LocationService locationService)
         {
             _interloopService = interloop;
 
@@ -53,7 +52,6 @@ namespace ChickenTinder.Client.Data
                 Console.WriteLine(x + "   is a match !!!!!!!");
                 OnMatch?.Invoke(x);
             });
-            this.userService = userService;
         }
         public string CurrentUserId => this._hubConnection.ConnectionId;
         public bool IsHost => this._hubConnection.ConnectionId == _room.Host.SignalRConnection;
@@ -89,6 +87,7 @@ namespace ChickenTinder.Client.Data
 
                 _user = await userService.GetRandomUser();
                 _user.SignalRConnection = userId ?? "NA";
+                _user = new User();
                 _user.Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty;
                 _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
                 _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
@@ -112,11 +111,14 @@ namespace ChickenTinder.Client.Data
             if (_hubConnection is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
+              
             }
 
             // Temp write it to dev tools for debugging
             //Console.WriteLine(_room!.ToJson());
         }
+
+       
 
         public async Task JoinRoom(int roomId)
         {
@@ -124,6 +126,7 @@ namespace ChickenTinder.Client.Data
             if (_hubConnection is not null)
             {
                 _room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, _user);
+                
             }
         }
 
@@ -168,6 +171,15 @@ namespace ChickenTinder.Client.Data
 
         }
 
+        public async Task SetPickyUser(int roomId, string userId)
+        {
+            await Connect();
+
+            if (_hubConnection is not null && _room is not null)
+            {
+                await _hubConnection.InvokeAsync("SetPickyUser", roomId, userId);
+            }            
+        }
 
         public async ValueTask DisposeAsync()
         {

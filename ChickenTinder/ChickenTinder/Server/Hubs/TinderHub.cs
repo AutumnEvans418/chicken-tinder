@@ -19,8 +19,9 @@ public class TinderHub : Hub
 
     public async Task<DiningRoom?> JoinRoom(int roomId, User user)
     {
+        var room = await _roomManager.JoinRoom(user, roomId);
         await InvokeJoin(roomId, user);
-        return _roomManager.JoinRoom(user, roomId);
+        return room;
     }
 
     public async Task StartRoom(int roomId)
@@ -34,6 +35,11 @@ public class TinderHub : Hub
         {
             await InvokeMatch(roomId, RestaurantId);
         }
+    }
+
+    public async Task SetPickyUser(int roomId, string userId)
+    {
+        _roomManager.SetPickyUser(roomId, userId);
     }
 
     public async Task LeaveRoom(User user, int roomId)

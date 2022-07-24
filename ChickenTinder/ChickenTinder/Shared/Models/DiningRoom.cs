@@ -7,9 +7,10 @@ public class DiningRoom
     public DiningRoom(User host, List<Restaurant> restaurants)
     {
         Host = host;
-        Users = new() { { host } };
+        Users = new() { host };
         Restaurants = restaurants;
         Matches = new List<Match>();
+        PickyUsers = new List<User>() { host };
     }
 
     public User Host { get; set; }
@@ -18,6 +19,7 @@ public class DiningRoom
     public int ID { get; set; }
     public List<Restaurant> Restaurants { get; set; }
     public List<Match> Matches { get; set; }
+    public List<User> PickyUsers { get; set; }
     public Restaurant? WinningRestaurant { get; set; }
 
     public Restaurant? GetRestaurant(string Id)
@@ -42,6 +44,15 @@ public class DiningRoom
         {
             VoidedUsers.Add(user);
             Users.Remove(user);
+        }
+    }
+
+    public void SetPickyUser(string id)
+    {
+        var user = GetUser(id);
+        if (user is not null)
+        {
+            user.MaxSwipesReached = true;
         }
     }
 
