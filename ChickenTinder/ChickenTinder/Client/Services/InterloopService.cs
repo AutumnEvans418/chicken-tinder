@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using ChickenTinder.Shared.Api;
+using Microsoft.JSInterop;
 
 namespace ChickenTinder.Client.Services
 {
@@ -29,6 +30,11 @@ namespace ChickenTinder.Client.Services
         public async Task LaunchMaps(string lat, string lon)
         {
             await _jsRuntime.InvokeAsync<string?>("interloop.LaunchMaps", lat, lon);
+        }
+
+        public async Task LaunchMaps(Location location)
+        {
+            await _jsRuntime.InvokeAsync<string?>("interloop.LaunchMaps", location.Address1);
         }
     }
 }

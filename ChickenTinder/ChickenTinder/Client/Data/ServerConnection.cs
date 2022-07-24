@@ -64,11 +64,6 @@ namespace ChickenTinder.Client.Data
         public event Action<User>? OnLeave;
 
 
-        /// <summary>
-        /// Connect the SignalR Service and create the User
-        /// </summary>
-        /// <param name="location">The location of the User. Zip or City name</param>
-        /// <returns></returns>
         private async Task Connect()
         {
             if (_hubConnection.State is not HubConnectionState.Disconnected)
@@ -78,11 +73,11 @@ namespace ChickenTinder.Client.Data
 
             if (_user is null)
             {
-                var userId = await _interloopService.GetLocalStorage("ChickenTinder.UserId");
+                var userId = await _interloopService.GetLocalStorage("UserId");
                 if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(_hubConnection.ConnectionId))
                 {
                     userId = _hubConnection.ConnectionId;
-                    await _interloopService.SetLocalStorage("ChickenTinder.UserId", userId);
+                    await _interloopService.SetLocalStorage("UserId", userId);
                 }
 
                 _user = new();
@@ -91,14 +86,6 @@ namespace ChickenTinder.Client.Data
                 _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
                 _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
             }
-        }
-
-        public void SetName(string name)
-        {
-            _ = _interloopService.SetLocalStorage("ChickenTinder.UserName", name);
-
-            if (_user is not null)
-                _user.Name = name;
         }
 
         public async Task CreateRoom(string location = "Kansas City")
