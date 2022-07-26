@@ -32,6 +32,10 @@
         </div>
     }
 }
+else
+{
+    <Spinner />
+}
 @code {
 
     public string GetStyle(string color)
@@ -39,7 +43,7 @@
         return $"margin-right: 5px; border-radius: 50%; background-color: #{color}; padding: 10px;";
     }
 
-  
+
     protected async override Task OnInitializedAsync()
     {
         if (!server.HasRoom)
@@ -71,6 +75,9 @@
 
     public void Start()
     {
+        if (Id == null)
+            throw new Exception("room id cannot be null");
+
         nav.NavigateTo($"/swipe/{Id}");
     }
 
