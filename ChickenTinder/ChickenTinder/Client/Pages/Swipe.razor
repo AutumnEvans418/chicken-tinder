@@ -1,13 +1,10 @@
-﻿@page "/swipe/{Id}/join/{UserId}"
-@page "/swipe"
+﻿@page "/swipe/{Id:int}"
 @inject ServerConnection server
 <HeaderView></HeaderView>
-<SwipeList>
+<SwipeList Id="@Id">
 </SwipeList>
 @code {
     [Parameter]
-    public int UserId { get; set; }
-    [Parameter]
-    public int Id { get; set; }
+    public int? Id { get; set; }
 
 }

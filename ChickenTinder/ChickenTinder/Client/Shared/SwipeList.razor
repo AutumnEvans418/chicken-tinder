@@ -30,6 +30,8 @@
 
 @inject IJSRuntime runtime
 @code {
+    [Parameter]
+    public int? Id { get; set; }
 
     public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
     private SwipeJsInterop? interop;
@@ -42,6 +44,14 @@
         {
             interop = new SwipeJsInterop(runtime);
             interop.OnSwiped += OnSwipe;
+
+            if (!server.HasRoom)
+            {
+                if (Id.HasValue)
+                {
+                    await server.JoinRoom(Id.Value);
+                }
+            }
 
             if (server.Room == null)
                 throw new Exception("room cannot be null");

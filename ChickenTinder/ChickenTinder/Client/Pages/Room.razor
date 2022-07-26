@@ -1,5 +1,4 @@
-﻿@page "/room"
-@page "/room/{Id:int}"
+﻿@page "/room/{Id:int}"
 @using ChickenTinder.Client.Services
 @using ChickenTinder.Shared.Models
 
@@ -41,7 +40,7 @@
     }
 
   
-    protected async override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
         if (!server.HasRoom)
         {
@@ -55,9 +54,6 @@
         server.OnJoin += UserJoined;
         server.OnLeave += UserLeft;
         server.OnStart += Start;
-
-        base.OnInitialized();
-
     }
 
     public void UserJoined(User user)
@@ -75,7 +71,7 @@
 
     public void Start()
     {
-        nav.NavigateTo("/swipe");
+        nav.NavigateTo($"/swipe/{Id}");
     }
 
     private async Task Share()

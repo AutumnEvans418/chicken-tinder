@@ -128,7 +128,7 @@ namespace ChickenTinder.Client.Data
 
             if (HasRoom)
             {
-                await _hubConnection.InvokeAsync("Like", Room?.ID, RestaurantId, votes);
+                await _hubConnection.InvokeAsync("Like", Room?.ID, User?.Id, RestaurantId, votes);
             }
         }
 
@@ -144,20 +144,21 @@ namespace ChickenTinder.Client.Data
 
         public async Task<Restaurant?> GetRestaurant(string id)
         {
+            await Connect();
             return await _hubConnection.InvokeAsync<Restaurant>("GetRestaurant", id);
         }
 
         public async Task<DiningRoom?> GetRoom(int id)
         {
+            await Connect();
             return await _hubConnection.InvokeAsync<DiningRoom>("GetRoom", id);
-
         }
 
         public async Task SetPickyUser(int roomId, string userId)
         {
             await Connect();
 
-            if (_hubConnection is not null && Room is not null)
+            if (Room is not null)
             {
                 await _hubConnection.InvokeAsync("SetPickyUser", roomId, userId);
             }
