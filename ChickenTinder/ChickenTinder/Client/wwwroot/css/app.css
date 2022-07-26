@@ -114,6 +114,7 @@ html, body {
     position: fixed;
     bottom: 100px;
     left: 50%;
+    background-color: var(--backgroundColor);
 }
 
 h1 {
