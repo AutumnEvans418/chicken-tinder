@@ -6,10 +6,5 @@ using System.Threading.Tasks;
 
 namespace ChickenTinder.Shared.Models
 {
-    public class Match
-    {
-        public User ?User { get; set; }
-        public UserAction Action { get; set; }
-        public Restaurant? Restaurant { get; set; }
-    }
+    public record Match(User User, Restaurant Restaurant, UserAction Action);
 }

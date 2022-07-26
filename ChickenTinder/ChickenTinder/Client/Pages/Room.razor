@@ -1,6 +1,5 @@
 ﻿@page "/room"
 @page "/room/{Id:int}"
-@page "/room/{Id:int}/join/{UserId}"
 @using ChickenTinder.Client.Services
 @using ChickenTinder.Shared.Models
 
@@ -16,14 +15,14 @@
     @foreach (var user in server.Room?.Users ?? new List<User>())
     {
         <div class="center-all" style="margin: 10px">
-            <UserBadge Width="80" IsYou="@(server.CurrentUserId == user.SignalRConnection)" ShowName="true" User="user"></UserBadge>
+            <UserBadge Width="80" IsYou="@(server.User?.Id == user.Id)" ShowName="true" User="user"></UserBadge>
         </div>
     }
 
     @if (server.IsHost)
     {
         <div class="footer">
-            @if (server.Room.Users.Count > 1)
+            @if (server.Room?.Users.Count > 1)
             {
                 <button class="btn" @onclick="() => server.Start()">Start</button>
             }
@@ -53,13 +52,9 @@
             }
         }
 
-        //if (server.HasRoom == false)
-        //    throw new Exception("impossible!");
-
         server.OnJoin += UserJoined;
         server.OnLeave += UserLeft;
         server.OnStart += Start;
-
 
         base.OnInitialized();
 
@@ -74,16 +69,9 @@
     {
         StateHasChanged();
     }
-    private async Task CopyTextToClipboard()
-    {
-     //   await _js.InvokeVoidAsync("clipboardCopy.copyText", server.Room?.ID);
-    }
-    [Parameter]
-    public int? UserId { get; set; }
+
     [Parameter]
     public int? Id { get; set; }
-
-
 
     public void Start()
     {

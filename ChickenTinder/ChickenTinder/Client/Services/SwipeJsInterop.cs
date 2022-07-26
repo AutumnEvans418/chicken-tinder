@@ -10,7 +10,7 @@ namespace ChickenTinder.Client
     // This class can be registered as scoped DI service and then injected into Blazor
     // components for use.
 
-    public class SwipeJsInterop : IAsyncDisposable
+    public class SwipeJsInterop : IDisposable
     {
 
         DotNetObjectReference<SwipeJsInterop> dotNetRef;
@@ -32,14 +32,14 @@ namespace ChickenTinder.Client
             await jsRuntime.InvokeVoidAsync("Swipe.initCards");
         }
 
-        public event EventHandler<SwipeDirection> OnSwiped;
+        public event EventHandler<SwipeDirection>? OnSwiped;
         [JSInvokable]
         public void Swipe(int direction)
         {
             OnSwiped?.Invoke(this, (SwipeDirection)direction);
         }
 
-        public async ValueTask DisposeAsync()
+        public void Dispose()
         {
             dotNetRef.Dispose();
         }

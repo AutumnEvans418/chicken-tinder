@@ -115,12 +115,16 @@ else
 
     private void GetDirections()
     {
+        if(WinningRestaurant == null)
+            return;
         _ = _interloopService.LaunchMaps(WinningRestaurant.Coordinates.Latitude.ToString(),
                                          WinningRestaurant.Coordinates.Longitude.ToString());
     }
 
     private void GoToYelp()
     {
+        if(WinningRestaurant == null)
+            return;
         _= _js.InvokeAsync<object>("open", $"https://www.yelp.com/map/{WinningRestaurant.Alias}", "_blank");
     }
 }

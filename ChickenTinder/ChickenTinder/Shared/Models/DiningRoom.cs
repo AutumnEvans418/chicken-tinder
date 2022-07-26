@@ -29,12 +29,12 @@ public class DiningRoom
 
     public User? GetUser(string Id)
     {
-        return Users.FirstOrDefault(x=> x.SignalRConnection == Id);
+        return Users.FirstOrDefault(x=> x.Id == Id);
     }
 
     public bool UserExist(string id)
     {
-        return Users.Any(x=> x.SignalRConnection == id);
+        return Users.Any(x=> x.Id == id);
     }
 
     public void VoidUser(string id)

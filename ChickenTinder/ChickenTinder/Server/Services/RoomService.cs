@@ -28,15 +28,15 @@ public class RoomService
 
     public async Task<DiningRoom?> CreateRoom(User user)
     {
-        if (user is null) return null;
-        var data = await userService.GetRandomUser(new List<string>());
-
-        user.Name = data.Name;
-        user.Class = data.Class;
-        user.Color = data.Color;
-        var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude) 
-                                            ? await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude) 
+        if (user is null)
+            return null;
+        var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude)
+                                            ? await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude)
                                             : await _reastaurantService.GetRestaurants(user.Location);
+
+        user = await UpdateUser(user, null, new List<string>());
+
+
         if (locations is not null)
         {
             DiningRoom room = new(user, locations)
@@ -54,15 +54,31 @@ public class RoomService
         return null;
     }
 
+    private async Task<User?> UpdateUser(User user, DiningRoom? room, List<string> users)
+    {
+        var existingUser = room?.GetUser(user.Id);
+        if (existingUser != null)
+        {
+            existingUser.SignalRConnection = user.SignalRConnection;
+            return null;
+        }
+        var data = await userService.GetRandomUser(users);
+
+        user.Name = data.Name;
+        user.Class = data.Class;
+        user.Color = data.Color;
+        return user;
+    }
+
     public async Task<DiningRoom?> JoinRoom(User user, int roomId)
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
-            var data = await userService.GetRandomUser(room.Users.Select(p => p.Name).ToList());
-            user.Name = data.Name;
-            user.Class = data.Class;
-            user.Color = data.Color;
-            room.Join(user);
+            var result = await UpdateUser(user, room, room.Users.Select(p => p.Name).ToList());
+            if (result != null)
+            {
+                room.Join(result);
+            }
             return room;
         }
         return null;
@@ -101,12 +117,12 @@ public class RoomService
                 var restaurant = room.GetRestaurant(RestaurantId);
                 var user = room.GetUser(userId);
 
-                Match match = new()
-                {
-                    User = user,
-                    Action = votes,
-                    Restaurant = restaurant,
-                };
+                if (user == null)
+                    throw new Exception("user was not found");
+                if (restaurant == null)
+                    throw new Exception("restaurant was not found");
+
+                Match match = new(user, restaurant, votes);
 
                 if (_matchService.CheckForMatch(room, match))
                 {

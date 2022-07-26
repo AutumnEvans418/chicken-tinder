@@ -68,8 +68,11 @@ else
         }
         _isLoading = false;
         StateHasChanged();
-
+        if (_server.Room == null)
+        {
+            return;
+        }
         //create the room...
-        nav.NavigateTo("/room");
+        nav.NavigateTo($"/room/{_server.Room.ID}");
     }
 }

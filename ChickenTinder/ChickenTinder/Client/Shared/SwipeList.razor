@@ -104,9 +104,9 @@
             ResetListCount();
             if (listsRemaining == 0)
             {
-                if (server?.Room != null)
+                if (server?.Room != null && server.User != null)
                 {
-                    await server.SetPickyUser(server.Room.ID, server.CurrentUserId);
+                    await server.SetPickyUser(server.Room.ID, server.User.Id);
                     Matched(restaurant.ID);
                 }
             }
