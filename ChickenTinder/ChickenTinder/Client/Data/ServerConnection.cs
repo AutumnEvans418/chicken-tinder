@@ -46,10 +46,10 @@ namespace ChickenTinder.Client.Data
                 OnLeave?.Invoke(x);
             });
 
-            _hubConnection.On<string>("OnMatch", (x) =>
+            _hubConnection.On("OnMatch", () =>
             {
-                Console.WriteLine(x + "   is a match !!!!!!!");
-                OnMatch?.Invoke(x);
+                Console.WriteLine("   is a match !!!!!!!");
+                OnMatch?.Invoke();
             });
         }
         public User? User => _user;
@@ -58,7 +58,7 @@ namespace ChickenTinder.Client.Data
         public DiningRoom? Room { get; private set; } = null;
 
         public event Action? OnStart;
-        public event Action<string>? OnMatch; // RestaurantId of the Match
+        public event Action? OnMatch; // RestaurantId of the Match
         public event Action<User>? OnJoin;
         public event Action<User>? OnLeave;
 

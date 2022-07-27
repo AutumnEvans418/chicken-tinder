@@ -33,13 +33,16 @@ public class TinderHub : Hub
     {
         if (_roomManager.Vote(roomId, userId, RestaurantId, votes))
         {
-            await InvokeMatch(roomId, RestaurantId);
+            await InvokeMatch(roomId);
         }
     }
 
-    public void SetPickyUser(int roomId, string userId)
+    public async void SetPickyUser(int roomId, string userId)
     {
-        _roomManager.SetPickyUser(roomId, userId);
+        if(_roomManager.SetPickyUser(roomId, userId))
+        {
+            await InvokeMatch(roomId);
+        }
     }
 
     public async Task LeaveRoom(User user, int roomId)
@@ -65,9 +68,9 @@ public class TinderHub : Hub
 
 
 
-    private async Task InvokeMatch(int roomId, string RestaurantId)
+    private async Task InvokeMatch(int roomId)
     {
-        await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnMatch", RestaurantId);
+        await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnMatch");
     }
 
     private async Task InvokeJoin(int roomId, User userId)

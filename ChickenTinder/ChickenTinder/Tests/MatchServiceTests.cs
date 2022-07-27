@@ -13,7 +13,8 @@ namespace Tests
             var host = new User();
             var room = new DiningRoom(host, restaurants.ToList());
             var match = new Match(host, restaurants.First(), UserAction.Like);
-            MatchService.CheckForMatch(room, match).Should().BeTrue();
+            MatchService.AddMatch(room, match);
+            MatchService.CheckForMatch(room).Should().BeTrue();
         }
 
         [Fact]
@@ -26,8 +27,8 @@ namespace Tests
             var room = new DiningRoom(host, restaurants.ToList());
             var match = new Match(host, restaurants.First(), UserAction.No);
             room.SetPickyUser(host.Id);
-
-            MatchService.CheckForMatch(room, match).Should().BeTrue();
+            MatchService.AddMatch(room, match);
+            MatchService.CheckForMatch(room).Should().BeTrue();
         }
 
         [Theory]
@@ -70,7 +71,7 @@ namespace Tests
                     room.SetPickyUser(user1.Id);
             }
 
-            MatchService.CheckForMatch(room, room.Matches.LastOrDefault()).Should().Be(result);
+            MatchService.CheckForMatch(room).Should().Be(result);
             if (winningRestaurant != null)
             {
                 room.WinningRestaurant.Should().Be(restaurants[winningRestaurant.Value]);

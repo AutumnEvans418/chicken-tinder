@@ -92,14 +92,16 @@ public class RoomService
         return null;
     }
 
-    public void SetPickyUser(int roomId, string userId)
+    public bool SetPickyUser(int roomId, string userId)
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
             var timer = Timers.First(p => p.User.Id == userId);
             timer.ResetTimeout();
             room.SetPickyUser(userId);
+            return _matchService.CheckForMatch(room);
         }
+        return false;
     }
 
     public void LeaveRoom(User user, int roomId)
@@ -138,12 +140,9 @@ public class RoomService
                     return false;
 
                 Match match = new(user, restaurant, votes);
-
-                if (_matchService.CheckForMatch(room, match))
-                {
-                    room.WinningRestaurant = restaurant;
-                    return true;
-                }
+                _matchService.AddMatch(room, match);
+                return _matchService.CheckForMatch(room);
+                
             }
         }
 

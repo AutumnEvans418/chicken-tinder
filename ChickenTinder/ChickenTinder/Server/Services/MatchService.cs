@@ -2,38 +2,44 @@
 
 public class MatchService
 {
-    public bool CheckForMatch(DiningRoom room, Match? match)
+    public void AddMatch(DiningRoom room, Match match)
     {
         if (match?.Restaurant?.ID == null) throw new ArgumentNullException(nameof(match));
 
-        bool matchFound = false;
-        int userMaxSwipeCount = 0;
-        int userMatches = 0;
-
-        userMaxSwipeCount = room.Users.Where(u => u.MaxSwipesReached).Count();
-        
         if (!room.Matches.Where(m => m.Restaurant.ID == match.Restaurant.ID && m.User.Id == match.User.Id).Any())
         {
             room.Matches.Add(match);
-        }            
-            
-        userMatches = room.Matches
-            .Where(m => m.Restaurant?.ID == match.Restaurant.ID && (int)m.Action > 1)
-            .Select(m => new { m.Restaurant.ID, m.User.Id})
-            .Distinct().Count();
+        }
+    }
+
+    public bool CheckForMatch(DiningRoom room)
+    {
+        int userMaxSwipeCount = 0;
+        userMaxSwipeCount = room.Users.Where(u => u.MaxSwipesReached).Count();
+
 
         if (userMaxSwipeCount >= room.Users.Count)
-        {            
+        {
             //find winning restaurant based on most votes and least distance
             room.WinningRestaurant = room.Matches.OrderByDescending(m => (int)m.Action).ThenBy(m => m.Restaurant.Distance).FirstOrDefault()?.Restaurant;
-            matchFound = true;
-        }
-        else if (userMaxSwipeCount + userMatches >= room.Users.Count)
-        {
-            room.WinningRestaurant = match.Restaurant;
-            matchFound = true;
+            return true;
         }
 
-        return matchFound;
+        foreach (var restaurant in room.Restaurants)
+        {
+            int userMatches = room.Matches
+                .Where(m => m.Restaurant.ID == restaurant.ID && (int)m.Action > 1)
+                .Select(m => new { m.Restaurant.ID, m.User.Id })
+                .Distinct().Count();
+
+            if (userMaxSwipeCount + userMatches >= room.Users.Count)
+            {
+                room.WinningRestaurant = restaurant;
+                return true;
+            }
+        }
+        
+
+        return false;
     }
 }
