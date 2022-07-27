@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,21 +20,5 @@ namespace ChickenTinder.Shared.Models
         public bool MaxSwipesReached { get; set; }
 
         public string Style => $"color: #{Color}";
-    }
-
-    public enum UserAction
-    {
-        No = 0,
-        Maybe = 1,
-        Like = 2,
-        Love = 3
-    }
-
-    public enum SwipeDirection
-    {
-        Left = 2,
-        Up = 8,
-        Right = 4,
-        Down = 16,
     }
 }

@@ -21,7 +21,7 @@
     @if (server.IsHost)
     {
         <div class="footer">
-            @if (server.Room?.Users.Count > 1)
+            @if (server.Room?.Users.Count > 1 || allowSingle)
             {
                 <button class="btn" @onclick="() => server.Start()">Start</button>
             }
@@ -37,7 +37,12 @@ else
     <Spinner />
 }
 @code {
-
+    private bool allowSingle =>
+#if DEBUG
+    true;
+#else
+    false;
+#endif
     public string GetStyle(string color)
     {
         return $"margin-right: 5px; border-radius: 50%; background-color: #{color}; padding: 10px;";

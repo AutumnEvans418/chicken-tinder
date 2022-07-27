@@ -11,7 +11,6 @@ public class TinderHub : Hub
         _roomManager = roomManager;
     }
 
-
     public async Task<DiningRoom?> CreateRoom(User user)
     {
         return await _roomManager.CreateRoom(user);
@@ -26,7 +25,8 @@ public class TinderHub : Hub
 
     public async Task StartRoom(int roomId)
     {
-        await Clients.Clients(_roomManager.GetUserIds(roomId)).SendAsync("OnStart");
+        var ids = _roomManager.Start(roomId);
+        await Clients.Clients(ids).SendAsync("OnStart");
     }
 
     public async Task Like(int roomId, string userId, string RestaurantId, UserAction votes)

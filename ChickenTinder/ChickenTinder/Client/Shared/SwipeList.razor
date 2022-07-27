@@ -88,17 +88,15 @@
 
         Restaurants.Remove(restaurant);
 
-        if (action != SwipeDirection.Down)
+        var votes = action switch
         {
-            var votes = action switch
-            {
-                SwipeDirection.Left => UserAction.Maybe,
-                SwipeDirection.Right => UserAction.Like,
-                SwipeDirection.Up => UserAction.Love,
-                _ => throw new Exception(),
-            };
-            await server.Like(restaurant.ID, votes);
-        }
+            SwipeDirection.Left => UserAction.Maybe,
+            SwipeDirection.Right => UserAction.Like,
+            SwipeDirection.Up => UserAction.Love,
+            SwipeDirection.Down => UserAction.No,
+            _ => throw new Exception("invalid swipe")
+        };
+        await server.Like(restaurant.ID, votes);
 
         if (action == SwipeDirection.Left)
         {

@@ -15,7 +15,6 @@ public class DiningRoom
 
     public User Host { get; set; }
     public List<User> Users { get; set; }
-    public List<User> VoidedUsers { get; set; } = new();
     public int ID { get; set; }
     public List<Restaurant> Restaurants { get; set; }
     public List<Match> Matches { get; set; }
@@ -42,7 +41,6 @@ public class DiningRoom
         var user = GetUser(id);
         if (user is not null)
         {
-            VoidedUsers.Add(user);
             Users.Remove(user);
         }
     }
