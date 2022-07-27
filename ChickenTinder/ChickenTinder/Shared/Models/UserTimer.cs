@@ -9,7 +9,7 @@
             User = user;
         }
         public User User { get; set; }
-        private System.Timers.Timer Timer = new System.Timers.Timer(30000);
+        private readonly System.Timers.Timer Timer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
 
         private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {

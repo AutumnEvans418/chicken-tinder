@@ -2,6 +2,8 @@
 @using ChickenTinder.Shared.Models
 @inject ServerConnection server
 @inject NavigationManager nav
+
+
 <div class="tinder">
     <div class="tinder--status">
         <i class="fa-solid fa-heart"></i>
@@ -11,12 +13,21 @@
     </div>
 
     <div class="tinder--cards">
-
-        @foreach (var item in Restaurants)
+        @if (Restaurants.Count > 0)
         {
-            <div class="tinder--card" style="transform:none">
-                <Card Restaurant="@item"></Card>
+            @foreach (var item in Restaurants)
+            {
+                <div class="tinder--card" style="transform:none">
+                    <Card Restaurant="@item"></Card>
+                </div>
+            }
+        }
+        else
+        {
+            <div>
+                <Spinner></Spinner>
             </div>
+            <div>Waiting on others...</div>
         }
     </div>
 
@@ -27,6 +38,8 @@
         <button id="nope">      <i class="fa-solid fa-thumbs-down"></i></button>
     </div>
 </div>
+
+
 
 @inject IJSRuntime runtime
 @code {
@@ -54,7 +67,9 @@
             }
 
             if (server.Room == null)
-                throw new Exception("room cannot be null");
+            {
+                nav.NavigateTo("/");
+            }
 
             server.OnMatch += Matched;
             Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
@@ -67,7 +82,7 @@
             await interop.Start();
     }
 
-    public void Matched(string restaurantId)
+    public void Matched(string id = "")
     {
         if (server.Room == null)
             throw new Exception("");
@@ -115,9 +130,16 @@
                 if (server?.Room != null && server.User != null)
                 {
                     await server.SetPickyUser(server.Room.ID, server.User.Id);
-                    Matched(restaurant.ID);
                 }
             }
+        }
+        if (Restaurants.Count == 0)
+        {
+            if (server?.Room != null && server.User != null)
+            {
+                await server.SetPickyUser(server.Room.ID, server.User.Id);
+            }
+            StateHasChanged();
         }
     }
 

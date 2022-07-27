@@ -12,14 +12,14 @@ public class MatchService
 
         userMaxSwipeCount = room.Users.Where(u => u.MaxSwipesReached).Count();
         
-        if (room.Matches.Where(m => m.Restaurant.ID == match.Restaurant.ID && m.User.Name == match.User.Name).Count() == 0)
+        if (!room.Matches.Where(m => m.Restaurant.ID == match.Restaurant.ID && m.User.Id == match.User.Id).Any())
         {
             room.Matches.Add(match);
         }            
             
         userMatches = room.Matches
             .Where(m => m.Restaurant?.ID == match.Restaurant.ID && (int)m.Action > 1)
-            .Select(m => new { m.Restaurant.ID, m.User.Name})
+            .Select(m => new { m.Restaurant.ID, m.User.Id})
             .Distinct().Count();
 
         if (userMaxSwipeCount >= room.Users.Count)

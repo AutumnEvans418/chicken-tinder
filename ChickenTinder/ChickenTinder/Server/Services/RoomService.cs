@@ -68,7 +68,7 @@ public class RoomService
             return null;
         }
         var data = await userService.GetRandomUser(users);
-
+        
         user.Name = data.Name;
         user.Class = data.Class;
         user.Color = data.Color;
@@ -82,6 +82,9 @@ public class RoomService
             var result = await UpdateUser(user, room, room.Users.Select(p => p.Name).ToList());
             if (result != null)
             {
+                var timer = new UserTimer(result);
+                timer.OnExpired = u => RemoveExpiredUsers(u, room, timer);
+                Timers.Add(timer);
                 room.Join(result);
             }
             return room;
