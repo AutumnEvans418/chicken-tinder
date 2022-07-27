@@ -18,16 +18,31 @@
         </div>
     }
 
-    @if (server.IsHost)
+    @if (server.IsHost && server.User != null)
     {
         <div class="footer">
+            <div>
+                @if(!string.IsNullOrWhiteSpace(server.User.Latitude)){
+                    <input @bind-value="@server.User.Location" placeholder="Location" class="textbox" disabled>
+                }
+                else{
+                    <input @bind-value="@server.User.Location" placeholder="Location" class="textbox">
+                }
+                <button class="btn btn-small" @onclick="() => server.SetLocation()"><i class="fa-solid fa-location-crosshairs"></i></button>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(server.User.Latitude))
+            {
+                <div>
+                    <p>(@server.User.Latitude, @server.User.Longitude)</p>
+                </div>
+            }
             @if (server.Room?.Users.Count > 1 || allowSingle)
             {
-                <button class="btn" @onclick="() => server.Start()">Start</button>
+                <button class="btn" style="width: 80%; margin-left: 10%; margin-right: 10%" @onclick="() => server.Start()">Start</button>
             }
             else
             {
-                <button disabled class="btn" @onclick="() => server.Start()">Waiting for others...</button>
+                <button disabled class="btn" style="width: 80%; margin-left: 10%; margin-right: 10%" @onclick="() => server.Start()">Waiting for others...</button>
             }
         </div>
     }

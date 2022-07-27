@@ -20,7 +20,6 @@ namespace ChickenTinder.Client.Data
 
             _locationService = locationService;
 
-            _ = _locationService.GetLocationAsync();
 
             _hubConnection = new HubConnectionBuilder()
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tinderhub"))
@@ -83,10 +82,18 @@ namespace ChickenTinder.Client.Data
 
                 //_user.SignalRConnection = userId ?? "NA";
                 _user.Id = userId ?? throw new Exception("userid cannot be null");
-                _user.Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty;
-                _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
+                
                 _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
             }
+        }
+
+        public async Task SetLocation()
+        {
+            if (_user == null)
+                return;
+            await _locationService.GetLocationAsync();
+            _user.Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty;
+            _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
         }
 
         public async Task CreateRoom(string location = "Kansas City")
@@ -94,7 +101,7 @@ namespace ChickenTinder.Client.Data
             await Connect();
 
             _user!.Location = location;
-
+            await SetLocation();
             Room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
             UpdateUser(Room);
         }
