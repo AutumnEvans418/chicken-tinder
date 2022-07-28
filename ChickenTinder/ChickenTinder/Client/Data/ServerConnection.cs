@@ -12,6 +12,7 @@ namespace ChickenTinder.Client.Data
         private readonly HubConnection _hubConnection;
         private readonly InterloopService _interloopService;
         private readonly ILogger<ServerConnection> logger;
+        private User user = new User();
 
         public ServerConnection(
             NavigationManager NavigationManager,
@@ -93,8 +94,17 @@ namespace ChickenTinder.Client.Data
                 }
             });
         }
+        public Action? OnUserChanged { get; set; }
         public Action? OnLocationChanged { get; set; }
-        public User User { get; private set; } = new User();
+        public User User
+        {
+            get => user; 
+            private set
+            {
+                user = value;
+                OnUserChanged?.Invoke();
+            }
+        }
         public bool IsHost => User.Id == Room?.Host.Id;
         public bool HasRoom => Room != null;
         public DiningRoom? Room { get; private set; } = null;
@@ -106,23 +116,31 @@ namespace ChickenTinder.Client.Data
         public bool IsLocationSet => !string.IsNullOrWhiteSpace(User.Location) || !string.IsNullOrWhiteSpace(User.Latitude);
         private async Task Connect()
         {
-            if (_hubConnection.State is not HubConnectionState.Disconnected)
-                return;
-
-            await _hubConnection.StartAsync();
-
-
-            var userId = await _interloopService.GetLocalStorage("UserId");
-            if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(_hubConnection.ConnectionId))
+            try
             {
-                userId = User.Id;
-                await _interloopService.SetLocalStorage("UserId", userId);
+                if (_hubConnection.State is not HubConnectionState.Disconnected)
+                    return;
+
+                await _hubConnection.StartAsync();
+
+
+                var userId = await _interloopService.GetLocalStorage("UserId");
+                if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(_hubConnection.ConnectionId))
+                {
+                    userId = User.Id;
+                    await _interloopService.SetLocalStorage("UserId", userId);
+                }
+
+                //_user.SignalRConnection = userId ?? "NA";
+                User.Id = userId ?? throw new Exception("userid cannot be null");
+
+                User.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
             }
-
-            //_user.SignalRConnection = userId ?? "NA";
-            User.Id = userId ?? throw new Exception("userid cannot be null");
-
-            User.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "connect failed");
+                throw;
+            }
         }
 
         public async Task SetLocation()

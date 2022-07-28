@@ -68,10 +68,9 @@ else
     }
     public string JoinText { get; set; } = "Host";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         server.OnLocationChanged = () => StateHasChanged();
-        base.OnInitialized();
     }
 
     public async void Join()

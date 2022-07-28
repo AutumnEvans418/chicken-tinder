@@ -2,7 +2,7 @@
 @using ChickenTinder.Shared.Models
 @inject ServerConnection server
 @inject NavigationManager nav
-
+@implements IDisposable
 
 <div class="tinder">
     <div class="tinder--status">
@@ -171,5 +171,14 @@
         swipesRemaining = Restaurants.Count;
         listsRemaining--;
         Console.WriteLine($"Swipes Remaining: {listsRemaining}");
+    }
+
+    public void Dispose()
+    {
+        if (this.interop == null)
+            return;
+        this.interop.OnSwiped -= OnSwipe;
+        this.interop.Dispose();
+        
     }
 }

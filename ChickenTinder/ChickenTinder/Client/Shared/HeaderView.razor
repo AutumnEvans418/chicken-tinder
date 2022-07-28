@@ -8,6 +8,11 @@
 </div>
 
 @code {
+    protected override void OnInitialized()
+    {
+        server.OnUserChanged = () => StateHasChanged();
+        base.OnInitialized();
+    }
     public void Home(){
         nav.NavigateTo("/");
     }

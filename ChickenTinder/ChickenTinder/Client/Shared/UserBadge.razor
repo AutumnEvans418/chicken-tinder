@@ -2,7 +2,7 @@
 @if (User != null)
 {
     <div class="user-container">
-        <i style="@GetStyle(User.Color ?? throw new Exception())" class="@GetClass(@User.Class)"></i>
+        <i style="@GetStyle(User.Color)" class="@GetClass(@User.Class)"></i>
         @if (ShowName)
         {
             <div style="display: table-cell; width: 5px"></div>
@@ -32,8 +32,9 @@
     [Parameter]
     public bool ShowName { get; set; }
 
-    public string GetStyle(string color)
+    public string GetStyle(string? color)
     {
+        color ??= "ffffff";
         return $"background-color: #{color}; width: {Width}px; height: {Width}px; font-size: {Width * .4}px";
     }
 
