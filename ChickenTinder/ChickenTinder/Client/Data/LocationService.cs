@@ -29,9 +29,14 @@ namespace ChickenTinder.Client.Data
             await module.InvokeVoidAsync(identifier: "getCurrentPosition", dotNetObjectReference);
         }
 
+        public Action<GeoCoordinates>? OnFound { get; set; }
+
         [JSInvokable]
-        public void OnSuccessAsync(GeoCoordinates geoCoordinates) => this.GeoCoordinates = geoCoordinates;
-        
+        public void OnSuccessAsync(GeoCoordinates geoCoordinates)
+        {
+            this.GeoCoordinates = geoCoordinates;
+            OnFound?.Invoke(geoCoordinates);
+        }
 
         public async ValueTask DisposeAsync()
         {

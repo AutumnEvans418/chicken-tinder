@@ -1,0 +1,21 @@
+﻿@using Microsoft.Extensions.Logging
+@inject ILogger<Error> Logger
+@inject IJSRuntime runtime
+@inject NavigationManager nav
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public async Task ProcessError(Exception ex, bool show, bool reload)
+    {
+        Logger.LogError(ex, "Processed Error");
+        if (show)
+            await runtime.InvokeVoidAsync("alert", ex.ToString());
+        if (reload)
+            nav.NavigateTo(nav.Uri, true);
+    }
+}

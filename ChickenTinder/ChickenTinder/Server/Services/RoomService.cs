@@ -29,10 +29,21 @@ public class RoomService
     {
         if (user is null)
             return null;
-        var locations = !string.IsNullOrEmpty(user.Longitude) && !string.IsNullOrEmpty(user.Latitude)
-                                            ? await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude)
-                                            : await _reastaurantService.GetRestaurants(user.Location);
 
+        var locations = new List<Restaurant>();
+        
+        if(!string.IsNullOrWhiteSpace(user.Longitude) && !string.IsNullOrWhiteSpace(user.Latitude))
+        {
+            locations = await _reastaurantService.GetRestaurants(user.Latitude, user.Longitude);
+        }
+        else if (!string.IsNullOrWhiteSpace(user.Location))
+        {
+            locations = await _reastaurantService.GetRestaurants(user.Location);
+        }
+        else
+        {
+            throw new Exception("location must be set");
+        }
         user = await UpdateUser(user, null, new List<string>()) ?? throw new Exception("user cannot be null");
 
 

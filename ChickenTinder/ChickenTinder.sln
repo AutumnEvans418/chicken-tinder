@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChickenTinder.Client", "Chi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChickenTinder.Shared", "ChickenTinder\Shared\ChickenTinder.Shared.csproj", "{A515A06A-3D98-42DA-A37F-F9E9E6C25C31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "ChickenTinder\Tests\Tests.csproj", "{F30D6341-EB66-4BB1-8FC3-E1B16A9AEA88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "ChickenTinder\Tests\Tests.csproj", "{F30D6341-EB66-4BB1-8FC3-E1B16A9AEA88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

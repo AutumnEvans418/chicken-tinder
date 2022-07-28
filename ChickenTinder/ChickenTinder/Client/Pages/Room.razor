@@ -21,21 +21,6 @@
     @if (server.IsHost && server.User != null)
     {
         <div class="footer">
-            <div>
-                @if(!string.IsNullOrWhiteSpace(server.User.Latitude)){
-                    <input @bind-value="@server.User.Location" placeholder="Location" class="textbox" disabled>
-                }
-                else{
-                    <input @bind-value="@server.User.Location" placeholder="Location" class="textbox">
-                }
-                <button class="btn btn-small" @onclick="() => server.SetLocation()"><i class="fa-solid fa-location-crosshairs"></i></button>
-            </div>
-            @if (!string.IsNullOrWhiteSpace(server.User.Latitude))
-            {
-                <div>
-                    <p>(@server.User.Latitude, @server.User.Longitude)</p>
-                </div>
-            }
             @if (server.Room?.Users.Count > 1 || allowSingle)
             {
                 <button class="btn" style="width: 80%; margin-left: 10%; margin-right: 10%" @onclick="() => server.Start()">Start</button>
@@ -52,6 +37,8 @@ else
     <Spinner />
 }
 @code {
+    [CascadingParameter]
+    public Error? Error { get; set; }
     private bool allowSingle =>
 #if DEBUG
     true;
@@ -66,18 +53,25 @@ else
 
     protected async override Task OnInitializedAsync()
     {
-        if (!server.HasRoom)
+        try
         {
-            if (Id.HasValue)
+            if (!server.HasRoom)
             {
-                await server.JoinRoom(Id.Value);
-                StateHasChanged();
+                if (Id.HasValue)
+                {
+                    await server.JoinRoom(Id.Value);
+                    StateHasChanged();
+                }
             }
-        }
 
-        server.OnJoin += UserJoined;
-        server.OnLeave += UserLeft;
-        server.OnStart += Start;
+            server.OnJoin += UserJoined;
+            server.OnLeave += UserLeft;
+            server.OnStart += Start;
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, true, true);
+        }
     }
 
     public void UserJoined(User user)
@@ -95,17 +89,31 @@ else
 
     public void Start()
     {
-        if (Id == null)
-            throw new Exception("room id cannot be null");
+        try
+        {
+            if (Id == null)
+                throw new Exception("room id cannot be null");
 
-        nav.NavigateTo($"/swipe/{Id}");
+            nav.NavigateTo($"/swipe/{Id}");
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, true ,true);
+        }
     }
 
     private async Task Share()
     {
-        if (server.Room is not null)
+        try
         {
-            await _shareService.ShareUrl(nav.BaseUri + "room/" + server.Room.ID);
+            if (server.Room is not null)
+            {
+                await _shareService.ShareUrl(nav.BaseUri + "room/" + server.Room.ID);
+            }
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, false, false);
         }
     }
 }

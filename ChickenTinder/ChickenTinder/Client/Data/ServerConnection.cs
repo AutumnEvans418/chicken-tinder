@@ -9,15 +9,25 @@ namespace ChickenTinder.Client.Data
     public class ServerConnection : IAsyncDisposable
     {
         private readonly LocationService _locationService;
-        private User? _user;
-
         private readonly HubConnection _hubConnection;
         private readonly InterloopService _interloopService;
+        private readonly ILogger<ServerConnection> logger;
 
-        public ServerConnection(NavigationManager NavigationManager, LocationService locationService, InterloopService interloop)
+        public ServerConnection(
+            NavigationManager NavigationManager,
+            LocationService locationService,
+            InterloopService interloop,
+            ILogger<ServerConnection> logger)
         {
+            locationService.OnFound = g =>
+            {
+                User.Longitude = locationService.GeoCoordinates?.Longitude.ToString();
+                User.Latitude = locationService.GeoCoordinates?.Latitude.ToString();
+                User.Location = $"{User.Latitude},{User.Longitude}";
+                OnLocationChanged?.Invoke();
+            };
             _interloopService = interloop;
-
+            this.logger = logger;
             _locationService = locationService;
 
 
@@ -28,31 +38,64 @@ namespace ChickenTinder.Client.Data
 
             _hubConnection.On("OnStart", () =>
             {
-                OnStart?.Invoke();
+                try
+                {
+                    OnStart?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "on start failed");
+                    throw;
+                }
             });
 
             _hubConnection.On<User>("OnJoin", (x) =>
             {
-                if (HasRoom && x.Id != User.Id)
-                    Room!.Users.Add(x);
-                OnJoin?.Invoke(x);
+                try
+                {
+                    if (HasRoom && x.Id != User.Id)
+                        Room!.Users.Add(x);
+                    OnJoin?.Invoke(x);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "on join failed");
+                    throw;
+                }
             });
 
             _hubConnection.On<User>("OnLeave", (x) =>
             {
-                if (HasRoom)
-                    Room!.Users = Room.Users.Where(p => p.Id != x.Id).ToList();
-                OnLeave?.Invoke(x);
+                try
+                {
+                    if (HasRoom)
+                        Room!.Users = Room.Users.Where(p => p.Id != x.Id).ToList();
+                    OnLeave?.Invoke(x);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "on leave failed");
+                    throw;
+                }
             });
 
             _hubConnection.On("OnMatch", () =>
             {
-                Console.WriteLine("   is a match !!!!!!!");
-                OnMatch?.Invoke();
+                try
+                {
+                    Console.WriteLine("   is a match !!!!!!!");
+                    OnMatch?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "on match failed");
+                    throw;
+                }
             });
         }
-        public User? User => _user;
-        public bool IsHost => _user?.Id == Room?.Host.Id;
+        public Action? OnLocationChanged { get; set; }
+        public User User { get; private set; } = new User();
+        public bool IsHost => User.Id == Room?.Host.Id;
         public bool HasRoom => Room != null;
         public DiningRoom? Room { get; private set; } = null;
 
@@ -60,8 +103,7 @@ namespace ChickenTinder.Client.Data
         public event Action? OnMatch; // RestaurantId of the Match
         public event Action<User>? OnJoin;
         public event Action<User>? OnLeave;
-
-
+        public bool IsLocationSet => !string.IsNullOrWhiteSpace(User.Location) || !string.IsNullOrWhiteSpace(User.Latitude);
         private async Task Connect()
         {
             if (_hubConnection.State is not HubConnectionState.Disconnected)
@@ -69,53 +111,45 @@ namespace ChickenTinder.Client.Data
 
             await _hubConnection.StartAsync();
 
-            if (_user is null)
+
+            var userId = await _interloopService.GetLocalStorage("UserId");
+            if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(_hubConnection.ConnectionId))
             {
-                _user = new();
-
-                var userId = await _interloopService.GetLocalStorage("UserId");
-                if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(_hubConnection.ConnectionId))
-                {
-                    userId = _user.Id;
-                    await _interloopService.SetLocalStorage("UserId", userId);
-                }
-
-                //_user.SignalRConnection = userId ?? "NA";
-                _user.Id = userId ?? throw new Exception("userid cannot be null");
-                
-                _user.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
+                userId = User.Id;
+                await _interloopService.SetLocalStorage("UserId", userId);
             }
+
+            //_user.SignalRConnection = userId ?? "NA";
+            User.Id = userId ?? throw new Exception("userid cannot be null");
+
+            User.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
         }
 
         public async Task SetLocation()
         {
-            if (_user == null)
+            if (User == null)
                 return;
             await _locationService.GetLocationAsync();
-            _user.Longitude = _locationService.GeoCoordinates?.Longitude.ToString() ?? string.Empty;
-            _user.Latitude = _locationService.GeoCoordinates?.Latitude.ToString() ?? string.Empty;
+
         }
 
-        public async Task CreateRoom(string location = "Kansas City")
+        public async Task CreateRoom()
         {
             await Connect();
-
-            _user!.Location = location;
-            await SetLocation();
-            Room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", _user);
+            Room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", User);
             UpdateUser(Room);
         }
 
         public void UpdateUser(DiningRoom? room)
         {
             if (room != null)
-                _user = room.Users.First(p => User?.Id == p.Id);
+                User = room.Users.First(p => User?.Id == p.Id);
         }
 
         public async Task JoinRoom(int roomId)
         {
             await Connect();
-            Room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, _user);
+            Room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, User);
             UpdateUser(Room);
         }
 
@@ -125,7 +159,7 @@ namespace ChickenTinder.Client.Data
 
             if (HasRoom)
             {
-                await _hubConnection.InvokeAsync("LeaveRoom", Room!.ID, _user);
+                await _hubConnection.InvokeAsync("LeaveRoom", Room!.ID, User);
             }
         }
 

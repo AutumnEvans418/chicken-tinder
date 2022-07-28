@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using ChickenTinder.Client.Data
 @inject NavigationManager nav
-@inject ServerConnection _server;
+@inject ServerConnection server;
 
 @if (!_isLoading)
 {
@@ -13,13 +13,28 @@
 
     <div class="footer">
         <div class="center-all">
+            @if (!string.IsNullOrWhiteSpace(server.User.Latitude))
+            {
+                <input @bind-value="@server.User.Location" placeholder="Location" class="textbox" disabled>
+            }
+            else
+            {
+                <input value="@server.User.Location" @oninput="e => server.User.Location = e.Value?.ToString()" placeholder="Location" class="textbox">
+            }
+            <button class="btn btn-small" @onclick="() => server.SetLocation()"><i class="fa-solid fa-location-crosshairs"></i></button>
+        </div>
+        <div class="center-all">
             <p style="margin: 0px">Host or Enter Code</p>
         </div>
         <div class="center-all">
             <input class="textbox" type="number" placeholder="Code" value="@Code" @oninput="e => Code = e.Value?.ToString()" />
         </div>
         <div class="center-bottom">
-            <button class="btn" @onclick="Join">@JoinText</button>
+            @if(server.IsLocationSet || !string.IsNullOrWhiteSpace(Code)){
+                <button class="btn" @onclick="Join">@JoinText</button>
+            } else {
+                <button disabled class="btn" @onclick="Join">@JoinText</button>
+            }
 
         </div>
     </div>
@@ -31,6 +46,8 @@ else
 
 
 @code {
+    [CascadingParameter]
+    public Error? Error { get; set; }
     private bool _isLoading = false;
     private string? _code;
     public string? Code
@@ -51,26 +68,39 @@ else
     }
     public string JoinText { get; set; } = "Host";
 
+    protected override void OnInitialized()
+    {
+        server.OnLocationChanged = () => StateHasChanged();
+        base.OnInitialized();
+    }
+
     public async void Join()
     {
-        _isLoading = true;
-        StateHasChanged();
-
-        if (string.IsNullOrWhiteSpace(Code))
+        try
         {
-            await _server.CreateRoom();
+            _isLoading = true;
+            StateHasChanged();
+            if (string.IsNullOrWhiteSpace(Code))
+            {
+                await server.CreateRoom();
+            }
+            else
+            {
+                await server.JoinRoom(int.Parse(Code));
+            }
+            _isLoading = false;
+            StateHasChanged();
+            if (server.Room == null)
+            {
+                return;
+            }
+            //create the room...
+            nav.NavigateTo($"/room/{server.Room.ID}");
         }
-        else
+        catch (Exception ex)
         {
-            await _server.JoinRoom(int.Parse(Code));
+            Error?.ProcessError(ex, true, true);
         }
-        _isLoading = false;
-        StateHasChanged();
-        if (_server.Room == null)
-        {
-            return;
-        }
-        //create the room...
-        nav.NavigateTo($"/room/{_server.Room.ID}");
+       
     }
 }

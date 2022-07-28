@@ -45,7 +45,8 @@
 @code {
     [Parameter]
     public int? Id { get; set; }
-
+    [CascadingParameter]
+    public Error? Error { get; set; }
     public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
     private SwipeJsInterop? interop;
     private int listsRemaining = 2;
@@ -53,93 +54,115 @@
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        try
         {
-            interop = new SwipeJsInterop(runtime);
-            interop.OnSwiped += OnSwipe;
-
-            if (!server.HasRoom)
+            if (firstRender)
             {
-                if (Id.HasValue)
+                interop = new SwipeJsInterop(runtime);
+                interop.OnSwiped += OnSwipe;
+
+                if (!server.HasRoom)
                 {
-                    await server.JoinRoom(Id.Value);
+                    if (Id.HasValue)
+                    {
+                        await server.JoinRoom(Id.Value);
+                    }
                 }
-            }
 
-            if (server.Room == null)
-            {
-                nav.NavigateTo("/");
-            }
+                if (server.Room == null)
+                {
+                    nav.NavigateTo("/");
+                }
 
-            server.OnMatch += Matched;
-            Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
-            swipesRemaining = Restaurants.Count;
-            Console.WriteLine($"Swipes Remaining: {swipesRemaining}");
-            StateHasChanged();
+                server.OnMatch += Matched;
+                Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
+                swipesRemaining = Restaurants.Count;
+                Console.WriteLine($"Swipes Remaining: {swipesRemaining}");
+                StateHasChanged();
+            }
+            Console.WriteLine("blazore re-rendered");
+            if (interop != null)
+                await interop.Start();
         }
-        Console.WriteLine("blazore re-rendered");
-        if (interop != null)
-            await interop.Start();
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, true, true);
+        }
+
     }
 
     public void Matched()
     {
-        if (server.Room == null)
-            throw new Exception("");
-        //server.Room.WinningRestaurant = server.Room.GetRestaurant(restaurantId) ?? throw new Exception("not found");
-        StateHasChanged();
-        nav.NavigateTo($"/match/{server.Room.ID}");
-        Console.WriteLine("Matched!");
+        try
+        {
+            if (server.Room == null)
+                throw new Exception("room cannot be null");
+            StateHasChanged();
+            nav.NavigateTo($"/match/{server.Room.ID}");
+            Console.WriteLine("Matched!");
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, true, true);
+        }
+
     }
 
     public async void OnSwipe(object? sender, SwipeDirection action)
     {
-        Console.WriteLine("I am being clicked");
-        Console.WriteLine(action);
-        var restaurant = Restaurants.FirstOrDefault();
-
-        if (restaurant == null)
-            return;
-
-        Restaurants.Remove(restaurant);
-
-        var votes = action switch
+        try
         {
-            SwipeDirection.Left => UserAction.Maybe,
-            SwipeDirection.Right => UserAction.Like,
-            SwipeDirection.Up => UserAction.Love,
-            SwipeDirection.Down => UserAction.No,
-            _ => throw new Exception("invalid swipe")
-        };
-        await server.Like(restaurant.ID, votes);
+            Console.WriteLine("I am being clicked");
+            Console.WriteLine(action);
+            var restaurant = Restaurants.FirstOrDefault();
 
-        if (action == SwipeDirection.Left)
-        {
-            Restaurants.Add(restaurant);
+            if (restaurant == null)
+                return;
 
-            Console.WriteLine($"{restaurant.Name} added back to list");
-        }
-        Console.WriteLine($"Restaurant Count: {Restaurants.Count}");
-        swipesRemaining--;
-        Console.WriteLine($"Swipes Remaining: {swipesRemaining}");
-        if (swipesRemaining == 0)
-        {
-            ResetListCount();
-            if (listsRemaining == 0)
+            Restaurants.Remove(restaurant);
+
+            var votes = action switch
+            {
+                SwipeDirection.Left => UserAction.Maybe,
+                SwipeDirection.Right => UserAction.Like,
+                SwipeDirection.Up => UserAction.Love,
+                SwipeDirection.Down => UserAction.No,
+                _ => throw new Exception("invalid swipe")
+            };
+            await server.Like(restaurant.ID, votes);
+
+            if (action == SwipeDirection.Left)
+            {
+                Restaurants.Add(restaurant);
+
+                Console.WriteLine($"{restaurant.Name} added back to list");
+            }
+            Console.WriteLine($"Restaurant Count: {Restaurants.Count}");
+            swipesRemaining--;
+            Console.WriteLine($"Swipes Remaining: {swipesRemaining}");
+            if (swipesRemaining == 0)
+            {
+                ResetListCount();
+                if (listsRemaining == 0)
+                {
+                    if (server?.Room != null && server.User != null)
+                    {
+                        await server.SetPickyUser(server.Room.ID, server.User.Id);
+                    }
+                }
+            }
+            if (Restaurants.Count == 0)
             {
                 if (server?.Room != null && server.User != null)
                 {
                     await server.SetPickyUser(server.Room.ID, server.User.Id);
                 }
+                StateHasChanged();
             }
         }
-        if (Restaurants.Count == 0)
+        catch (Exception ex)
         {
-            if (server?.Room != null && server.User != null)
-            {
-                await server.SetPickyUser(server.Room.ID, server.User.Id);
-            }
-            StateHasChanged();
+            Error?.ProcessError(ex, true, true);
         }
     }
 

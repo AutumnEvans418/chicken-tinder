@@ -24,7 +24,10 @@ builder.Services.AddSingleton<RestaurantService>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<HttpClient>();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(o =>
+{
+    o.EnableDetailedErrors = true;
+});
 builder.Services.AddResponseCompression(opts =>
 {
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(

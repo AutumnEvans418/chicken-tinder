@@ -18,7 +18,7 @@
 
 @if (WinningRestaurant == null)
 {
-    <Spinner/>
+    <Spinner />
 }
 else
 {
@@ -63,7 +63,8 @@ else
 @code {
     [Parameter]
     public int RoomID { get; set; }
-
+    [CascadingParameter]
+    public Error? Error { get; set; }
     private DiningRoom? Room { get; set; }
     private Restaurant? WinningRestaurant { get; set; }
     private string RestaurantName { get; set; } = "";
@@ -88,41 +89,70 @@ else
 
     protected async override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
+        try
         {
-            await _js.InvokeVoidAsync("Fireworks.confetti");
-            StateHasChanged();
+            if (firstRender)
+            {
+                await _js.InvokeVoidAsync("Fireworks.confetti");
+                StateHasChanged();
+            }
         }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, true, true);
+        }
+
     }
 
     protected override async Task OnInitializedAsync()
     {
-        Room = await ServerConnection.GetRoom(RoomID);
-        if (Room != null && Room?.WinningRestaurant != null)
+        try
         {
-            WinningRestaurant = Room.WinningRestaurant;
-            RestaurantName = Room.WinningRestaurant.Name;
-            Matches = Room
-                .Matches
-                .Where(p => p.Restaurant?.ID == WinningRestaurant.ID)
-                .ToList();
+            Room = await ServerConnection.GetRoom(RoomID);
+            if (Room != null && Room?.WinningRestaurant != null)
+            {
+                WinningRestaurant = Room.WinningRestaurant;
+                RestaurantName = Room.WinningRestaurant.Name;
+                Matches = Room
+                    .Matches
+                    .Where(p => p.Restaurant?.ID == WinningRestaurant.ID)
+                    .ToList();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, true, true);
+        }
+    }
+
+    private async void GetDirections()
+    {
+        try
+        {
+            if (WinningRestaurant == null)
+                return;
+            await _interloopService.LaunchMaps(WinningRestaurant.Coordinates.Latitude.ToString(),
+                                             WinningRestaurant.Coordinates.Longitude.ToString());
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, true, true);
         }
 
-        //await ServerConnection.LeaveRoom();
     }
 
-    private void GetDirections()
+    private async void GoToYelp()
     {
-        if(WinningRestaurant == null)
-            return;
-        _ = _interloopService.LaunchMaps(WinningRestaurant.Coordinates.Latitude.ToString(),
-                                         WinningRestaurant.Coordinates.Longitude.ToString());
-    }
-
-    private void GoToYelp()
-    {
-        if(WinningRestaurant == null)
-            return;
-        _= _js.InvokeAsync<object>("open", $"https://www.yelp.com/map/{WinningRestaurant.Alias}", "_blank");
+        try
+        {
+            if (WinningRestaurant == null)
+                return;
+            await _js.InvokeAsync<object>("open", $"https://www.yelp.com/map/{WinningRestaurant.Alias}", "_blank");
+        }
+        catch (Exception ex)
+        {
+            Error?.ProcessError(ex, true, true);
+        }
     }
 }
