@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 namespace ChickenTinder.Client.Data
 {
-    public class ServerConnection : IAsyncDisposable
+    public class ServerConnection : IAsyncDisposable, IServerConnection
     {
         private readonly LocationService _locationService;
         private readonly HubConnection _hubConnection;
@@ -98,7 +98,7 @@ namespace ChickenTinder.Client.Data
         public Action? OnLocationChanged { get; set; }
         public User User
         {
-            get => user; 
+            get => user;
             private set
             {
                 user = value;

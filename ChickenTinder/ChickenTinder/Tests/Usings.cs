@@ -6,3 +6,7 @@ global using ChickenTinder.Client;
 global using ChickenTinder.Server.Services;
 global using ChickenTinder.Shared.Models;
 global using FluentAssertions;
+global using Bunit;
+global using ChickenTinder.Client.Data;
+global using Microsoft.Extensions.DependencyInjection;
+global using NSubstitute;

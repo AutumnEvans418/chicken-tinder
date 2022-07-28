@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace ChickenTinder.Client.Services
 {
-    public class InterloopService
+    public class InterloopService : IInterloopService
     {
         private readonly IJSRuntime _jsRuntime;
 
@@ -24,7 +24,7 @@ namespace ChickenTinder.Client.Services
 
         public async Task SetLocalStorage(string key, string value)
         {
-             await _jsRuntime.InvokeAsync<string?>("interloop.setLocalStorage", key, value);
+            await _jsRuntime.InvokeAsync<string?>("interloop.setLocalStorage", key, value);
         }
 
         public async Task LaunchMaps(string lat, string lon)

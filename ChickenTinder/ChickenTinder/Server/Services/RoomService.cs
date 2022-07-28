@@ -177,6 +177,7 @@ public class RoomService
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
+            room.Value.Status = RoomStatus.Swiping;
             var timers = Timers.Where(t => room.Value.Users.Select(u => u.Id).Contains(t.Value.Id)).ToList();
 
             timers.ForEach(u => u.ResetTimeout());

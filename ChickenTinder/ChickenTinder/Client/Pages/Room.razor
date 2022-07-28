@@ -2,9 +2,9 @@
 @using ChickenTinder.Client.Services
 @using ChickenTinder.Shared.Models
 
-@inject NavigationManager nav
-@inject ServerConnection server
-@inject InterloopService _shareService;
+@inject INavigationManager nav
+@inject IServerConnection server
+@inject IInterloopService _shareService;
 
 
 @if (server.HasRoom)
@@ -60,6 +60,14 @@ else
                 if (Id.HasValue)
                 {
                     await server.JoinRoom(Id.Value);
+                    if (server.Room?.Status == RoomStatus.Swiping)
+                    {
+                        Start();
+                    }
+                    else if(server.Room?.Status == RoomStatus.Matched)
+                    {
+                         nav.NavigateTo($"/match/{server.Room.ID}");
+                    }
                     StateHasChanged();
                 }
             }
@@ -98,7 +106,7 @@ else
         }
         catch (Exception ex)
         {
-            Error?.ProcessError(ex, true ,true);
+            Error?.ProcessError(ex, true, true);
         }
     }
 
@@ -113,7 +121,7 @@ else
         }
         catch (Exception ex)
         {
-            Error?.ProcessError(ex, false ,false);
+            Error?.ProcessError(ex, false, false);
         }
     }
 }

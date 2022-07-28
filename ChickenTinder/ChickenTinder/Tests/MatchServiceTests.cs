@@ -1,6 +1,74 @@
 ﻿
+using ChickenTinder.Client.Services;
+using ChickenTinder.Client.Pages;
 namespace Tests
 {
+    public class RoomPageTests : IDisposable
+    {
+        TestContext context = new TestContext();
+        IRenderedComponent<Room> Page;
+        IServerConnection Server;
+        INavigationManager Nav;
+        Fixture fixture;
+        public RoomPageTests()
+        {
+            fixture = new Fixture();
+            fixture.Customize(new AutoNSubstituteCustomization() { ConfigureMembers = true });
+            Server = fixture.Freeze<IServerConnection>();
+            Nav = fixture.Freeze<INavigationManager>();
+            context.Services.AddSingleton(Server);
+            context.Services.AddSingleton(fixture.Freeze<IInterloopService>());
+            context.Services.AddSingleton(Nav);
+        }
+
+        public void Dispose()
+        {
+            context.Dispose();
+        }
+
+        [Fact]
+        public void RoomStateSwiping_Should_NavToSwipe()
+        {
+            Server.HasRoom.Returns(false);
+
+            fixture.Customize<DinningRoom>(p => p.With(r => r.Status, RoomStatus.Swiping));
+            Page = context.RenderComponent<Room>(ComponentParameter.CreateParameter("Id", fixture.Create<int>()));
+            Nav.Received().NavigateTo(Arg.Any<string>());
+        }
+
+        [Fact]
+        public void RoomStateMatch_Should_NavToMatch()
+        {
+            Server.HasRoom.Returns(false);
+            fixture.Customize<DinningRoom>(p => p.With(r => r.Status, RoomStatus.Matched));
+            Page = context.RenderComponent<Room>(ComponentParameter.CreateParameter("Id", fixture.Create<int>()));
+            Nav.Received().NavigateTo(Arg.Any<string>());
+        }
+    }
+
+    public class IndexPageTests
+    {
+        [Fact]
+        public void IndexNullRoom_Should_NotNavigate()
+        {
+            using var context = new TestContext();
+
+            var fixture = new Fixture();
+            fixture.Customize(new AutoNSubstituteCustomization() { ConfigureMembers = true });
+            var server = fixture.Freeze<IServerConnection>();
+            DinningRoom? room = null;
+            server.Room.Returns(room);
+
+            var nav = fixture.Freeze<INavigationManager>();
+            context.Services.AddSingleton(server);
+            context.Services.AddSingleton(nav);
+            var cut = context.RenderComponent<ChickenTinder.Client.Pages.Index>();
+
+            cut.Instance.Join();
+            nav.DidNotReceive().NavigateTo(Arg.Any<string>());
+        }
+    }
+
     public class MatchServiceTests
     {
         public MatchService MatchService { get; set; } = new MatchService();
@@ -39,12 +107,12 @@ namespace Tests
         [InlineData(1, UserAction.Like, true, 2, UserAction.Like, true, true, 1)]
         [InlineData(1, UserAction.Like, true, 2, UserAction.Love, true, true, 2)]
         public void MatchExamples(
-            int? restId1, 
-            UserAction action1, 
-            bool isPicky1, 
-            int? restId2, 
-            UserAction action2, 
-            bool isPicky2, 
+            int? restId1,
+            UserAction action1,
+            bool isPicky1,
+            int? restId2,
+            UserAction action2,
+            bool isPicky2,
             bool result,
             int? winningRestaurant)
         {

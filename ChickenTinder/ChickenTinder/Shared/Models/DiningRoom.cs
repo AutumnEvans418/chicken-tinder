@@ -12,7 +12,7 @@ public class DinningRoom
         Matches = new List<Match>();
         PickyUsers = new List<User>() { host };
     }
-
+    public RoomStatus Status { get; set; }
     public User Host { get; set; }
     public List<User> Users { get; set; }
     public int ID { get; set; }

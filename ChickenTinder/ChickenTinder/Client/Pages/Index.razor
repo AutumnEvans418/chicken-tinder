@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using ChickenTinder.Client.Data
-@inject NavigationManager nav
-@inject ServerConnection server;
+@inject INavigationManager nav
+@inject IServerConnection server;
 
 @if (!_isLoading)
 {

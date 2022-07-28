@@ -20,6 +20,7 @@ public class MatchService
 
         if (userMaxSwipeCount >= room.Users.Count)
         {
+            room.Status = RoomStatus.Matched;
             //find winning restaurant based on most votes and least distance
             room.WinningRestaurant = room.Matches.OrderByDescending(m => (int)m.Action).ThenBy(m => m.Restaurant.Distance).FirstOrDefault()?.Restaurant;
             return true;
@@ -34,6 +35,7 @@ public class MatchService
 
             if (userMaxSwipeCount + userMatches >= room.Users.Count)
             {
+                room.Status = RoomStatus.Matched;
                 room.WinningRestaurant = restaurant;
                 return true;
             }
