@@ -107,7 +107,7 @@ namespace ChickenTinder.Client.Data
         }
         public bool IsHost => User.Id == Room?.Host.Id;
         public bool HasRoom => Room != null;
-        public DiningRoom? Room { get; private set; } = null;
+        public DinningRoom? Room { get; private set; } = null;
 
         public event Action? OnStart;
         public event Action? OnMatch; // RestaurantId of the Match
@@ -154,11 +154,11 @@ namespace ChickenTinder.Client.Data
         public async Task CreateRoom()
         {
             await Connect();
-            Room = await _hubConnection.InvokeAsync<DiningRoom>("CreateRoom", User);
+            Room = await _hubConnection.InvokeAsync<DinningRoom>("CreateRoom", User);
             UpdateUser(Room);
         }
 
-        public void UpdateUser(DiningRoom? room)
+        public void UpdateUser(DinningRoom? room)
         {
             if (room != null)
                 User = room.Users.First(p => User?.Id == p.Id);
@@ -167,7 +167,7 @@ namespace ChickenTinder.Client.Data
         public async Task JoinRoom(int roomId)
         {
             await Connect();
-            Room = await _hubConnection.InvokeAsync<DiningRoom>("JoinRoom", roomId, User);
+            Room = await _hubConnection.InvokeAsync<DinningRoom>("JoinRoom", roomId, User);
             UpdateUser(Room);
         }
 
@@ -207,10 +207,10 @@ namespace ChickenTinder.Client.Data
             return await _hubConnection.InvokeAsync<Restaurant>("GetRestaurant", id);
         }
 
-        public async Task<DiningRoom?> GetRoom(int id)
+        public async Task<DinningRoom?> GetRoom(int id)
         {
             await Connect();
-            return await _hubConnection.InvokeAsync<DiningRoom>("GetRoom", id);
+            return await _hubConnection.InvokeAsync<DinningRoom>("GetRoom", id);
         }
 
         public async Task SetPickyUser(int roomId, string userId)

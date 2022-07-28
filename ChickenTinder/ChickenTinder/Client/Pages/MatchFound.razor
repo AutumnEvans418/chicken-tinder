@@ -65,7 +65,7 @@ else
     public int RoomID { get; set; }
     [CascadingParameter]
     public Error? Error { get; set; }
-    private DiningRoom? Room { get; set; }
+    private DinningRoom? Room { get; set; }
     private Restaurant? WinningRestaurant { get; set; }
     private string RestaurantName { get; set; } = "";
     public List<Match> Matches { get; set; } = new List<Match>();

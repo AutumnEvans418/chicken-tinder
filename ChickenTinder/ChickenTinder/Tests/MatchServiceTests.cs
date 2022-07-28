@@ -11,7 +11,7 @@ namespace Tests
             var fixture = new Fixture();
             var restaurants = fixture.CreateMany<Restaurant>(3);
             var host = new User();
-            var room = new DiningRoom(host, restaurants.ToList());
+            var room = new DinningRoom(host, restaurants.ToList());
             var match = new Match(host, restaurants.First(), UserAction.Like);
             MatchService.AddMatch(room, match);
             MatchService.CheckForMatch(room).Should().BeTrue();
@@ -24,7 +24,7 @@ namespace Tests
             var fixture = new Fixture();
             var restaurants = fixture.CreateMany<Restaurant>(3);
             var host = new User();
-            var room = new DiningRoom(host, restaurants.ToList());
+            var room = new DinningRoom(host, restaurants.ToList());
             var match = new Match(host, restaurants.First(), UserAction.No);
             room.SetPickyUser(host.Id);
             MatchService.AddMatch(room, match);
@@ -51,7 +51,7 @@ namespace Tests
             var fixture = new Fixture();
             var restaurants = fixture.Build<Restaurant>().Without(p => p.Distance).CreateMany<Restaurant>(3).ToList();
             var host = new User();
-            var room = new DiningRoom(host, restaurants);
+            var room = new DinningRoom(host, restaurants);
             if (restId1 != null)
             {
                 var match = new Match(host, restaurants[restId1.Value], action1);

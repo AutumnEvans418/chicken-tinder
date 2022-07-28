@@ -1,7 +1,12 @@
 ﻿using ChickenTinder.Shared.Api;
 
 namespace ChickenTinder.Shared.Models;
-
+public enum RoomStatus
+{
+    Waiting,
+    Swiping,
+    Matched
+}
 public class Restaurant
 {
     public string ID { get; set; } = string.Empty;

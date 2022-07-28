@@ -2,7 +2,7 @@
 
 public class MatchService
 {
-    public void AddMatch(DiningRoom room, Match match)
+    public void AddMatch(DinningRoom room, Match match)
     {
         if (match?.Restaurant?.ID == null) throw new ArgumentNullException(nameof(match));
 
@@ -12,7 +12,7 @@ public class MatchService
         }
     }
 
-    public bool CheckForMatch(DiningRoom room)
+    public bool CheckForMatch(DinningRoom room)
     {
         int userMaxSwipeCount = 0;
         userMaxSwipeCount = room.Users.Where(u => u.MaxSwipesReached).Count();

@@ -7,8 +7,8 @@ public class RoomService
     private readonly RestaurantService _reastaurantService;
     private readonly MatchService _matchService;
     private readonly UserService userService;
-    private readonly Dictionary<int, DiningRoom> _rooms = new();
-    public List<UserTimer> Timers { get; set; } = new();
+    private readonly Dictionary<int, DinningRoom> _rooms = new();
+    public List<DisposalTimer<User>> Timers { get; set; } = new();
     public RoomService(RestaurantService restaurantService, MatchService match, UserService userService)
     {
         _matchService = match;
@@ -16,7 +16,7 @@ public class RoomService
         _reastaurantService = restaurantService;
     }
 
-    public DiningRoom? GetRoom(int Id)
+    public DinningRoom? GetRoom(int Id)
     {
         if (_rooms.TryGetValue(Id, out var room))
         {
@@ -25,7 +25,7 @@ public class RoomService
         return null;
     }
 
-    public async Task<DiningRoom?> CreateRoom(User user)
+    public async Task<DinningRoom?> CreateRoom(User user)
     {
         if (user is null)
             return null;
@@ -49,11 +49,11 @@ public class RoomService
 
         if (locations is not null)
         {
-            DiningRoom room = new(user, locations)
+            DinningRoom room = new(user, locations)
             {
                 ID = new Random().Next(0, 99999)
             };
-            var timer = new UserTimer(user);
+            var timer = new DisposalTimer<User>(user);
             timer.OnExpired = u => RemoveExpiredUsers(u, room, timer);
             Timers.Add(timer);
             if (!_rooms.ContainsKey(room.ID))
@@ -67,7 +67,7 @@ public class RoomService
     }
 
 
-    private async Task<User?> UpdateUser(User user, DiningRoom? room, List<string> users)
+    private async Task<User?> UpdateUser(User user, DinningRoom? room, List<string> users)
     {
         var existingUser = room?.GetUser(user.Id);
         if (existingUser != null && room != null)
@@ -86,14 +86,14 @@ public class RoomService
         return user;
     }
 
-    public async Task<DiningRoom?> JoinRoom(User user, int roomId)
+    public async Task<DinningRoom?> JoinRoom(User user, int roomId)
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
             var result = await UpdateUser(user, room, room.Users.Select(p => p.Name).ToList());
             if (result != null)
             {
-                var timer = new UserTimer(result);
+                var timer = new DisposalTimer<User>(result);
                 timer.OnExpired = u => RemoveExpiredUsers(u, room, timer);
                 Timers.Add(timer);
                 room.Join(result);
@@ -180,7 +180,7 @@ public class RoomService
             return new();
     }
 
-    public void RemoveExpiredUsers(User user, DiningRoom room, UserTimer timer)
+    public void RemoveExpiredUsers(User user, DinningRoom room, DisposalTimer<User> timer)
     {
         Timers.Remove(timer);
         timer.Dispose();

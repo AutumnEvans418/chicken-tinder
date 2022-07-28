@@ -2,9 +2,9 @@
 
 namespace ChickenTinder.Shared.Models;
 
-public class DiningRoom
+public class DinningRoom
 {
-    public DiningRoom(User host, List<Restaurant> restaurants)
+    public DinningRoom(User host, List<Restaurant> restaurants)
     {
         Host = host;
         Users = new() { host };
