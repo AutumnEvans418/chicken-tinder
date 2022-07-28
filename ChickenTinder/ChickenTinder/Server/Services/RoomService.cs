@@ -7,7 +7,9 @@ public class RoomService
     private readonly RestaurantService _reastaurantService;
     private readonly MatchService _matchService;
     private readonly UserService userService;
-    private readonly Dictionary<int, DinningRoom> _rooms = new();
+    private readonly Dictionary<int, DisposalTimer<DinningRoom>> _rooms = new();
+    private TimeSpan UserTimeout = TimeSpan.FromMinutes(5);
+    private TimeSpan RoomTimeout = TimeSpan.FromMinutes(30);
     public List<DisposalTimer<User>> Timers { get; set; } = new();
     public RoomService(RestaurantService restaurantService, MatchService match, UserService userService)
     {
@@ -20,7 +22,7 @@ public class RoomService
     {
         if (_rooms.TryGetValue(Id, out var room))
         {
-            return room;
+            return room.Value;
         }
         return null;
     }
@@ -53,12 +55,15 @@ public class RoomService
             {
                 ID = new Random().Next(0, 99999)
             };
-            var timer = new DisposalTimer<User>(user);
+            var timer = new DisposalTimer<User>(user, UserTimeout);
             timer.OnExpired = u => RemoveExpiredUsers(u, room, timer);
             Timers.Add(timer);
             if (!_rooms.ContainsKey(room.ID))
             {
-                _rooms.Add(room.ID, room);
+                var dTimer = new DisposalTimer<DinningRoom>(room, RoomTimeout);
+                dTimer.ResetTimeout();
+                dTimer.OnExpired = d => RemoveRoom(dTimer);
+                _rooms.Add(room.ID, dTimer);
                 return room;
             }
         }
@@ -66,13 +71,21 @@ public class RoomService
         return null;
     }
 
+    public void RemoveRoom(DisposalTimer<DinningRoom> room)
+    {
+        if (_rooms.ContainsKey(room.Value.ID))
+        {
+            _rooms.Remove(room.Value.ID);
+        }
+        room.Dispose();
+    }
 
     private async Task<User?> UpdateUser(User user, DinningRoom? room, List<string> users)
     {
         var existingUser = room?.GetUser(user.Id);
         if (existingUser != null && room != null)
         {
-            var timer = Timers.First(p => p.User.Id == user.Id);
+            var timer = Timers.First(p => p.Value.Id == user.Id);
             timer.ResetTimeout();
             timer.OnExpired = u => RemoveExpiredUsers(u, room, timer);
             existingUser.SignalRConnection = user.SignalRConnection;
@@ -90,15 +103,15 @@ public class RoomService
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
-            var result = await UpdateUser(user, room, room.Users.Select(p => p.Name).ToList());
+            var result = await UpdateUser(user, room.Value, room.Value.Users.Select(p => p.Name).ToList());
             if (result != null)
             {
-                var timer = new DisposalTimer<User>(result);
-                timer.OnExpired = u => RemoveExpiredUsers(u, room, timer);
+                var timer = new DisposalTimer<User>(result, UserTimeout);
+                timer.OnExpired = u => RemoveExpiredUsers(u, room.Value, timer);
                 Timers.Add(timer);
-                room.Join(result);
+                room.Value.Join(result);
             }
-            return room;
+            return room.Value;
         }
         return null;
     }
@@ -107,10 +120,10 @@ public class RoomService
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
-            var timer = Timers.First(p => p.User.Id == userId);
+            var timer = Timers.First(p => p.Value.Id == userId);
             timer.ResetTimeout();
-            room.SetPickyUser(userId);
-            return _matchService.CheckForMatch(room);
+            room.Value.SetPickyUser(userId);
+            return _matchService.CheckForMatch(room.Value);
         }
         return false;
     }
@@ -119,7 +132,7 @@ public class RoomService
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
-            room.Leave(user);
+            room.Value.Leave(user);
         }
     }
 
@@ -127,7 +140,7 @@ public class RoomService
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
-            room.VoidUser(userId);
+            room.Value.VoidUser(userId);
         }
     }
 
@@ -135,24 +148,24 @@ public class RoomService
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
-            if (room.UserExist(userId))
+            if (room.Value.UserExist(userId))
             {
-                var restaurant = room.GetRestaurant(RestaurantId);
-                var user = room.GetUser(userId);
+                var restaurant = room.Value.GetRestaurant(RestaurantId);
+                var user = room.Value.GetUser(userId);
                 if (user == null)
                     throw new Exception("user was not found");
                 if (restaurant == null)
                     throw new Exception("restaurant was not found");
 
-                var timer = Timers.First(t => t.User.Id == user.Id);
+                var timer = Timers.First(t => t.Value.Id == user.Id);
                 timer.ResetTimeout();
 
                 if (votes == UserAction.No)
                     return false;
 
                 Match match = new(user, restaurant, votes);
-                _matchService.AddMatch(room, match);
-                return _matchService.CheckForMatch(room);
+                _matchService.AddMatch(room.Value, match);
+                return _matchService.CheckForMatch(room.Value);
                 
             }
         }
@@ -164,10 +177,10 @@ public class RoomService
     {
         if (_rooms.TryGetValue(roomId, out var room))
         {
-            var timers = Timers.Where(t => room.Users.Select(u => u.Id).Contains(t.User.Id)).ToList();
+            var timers = Timers.Where(t => room.Value.Users.Select(u => u.Id).Contains(t.Value.Id)).ToList();
 
             timers.ForEach(u => u.ResetTimeout());
-            return room.Users.Select(x => x.SignalRConnection).ToList();
+            return room.Value.Users.Select(x => x.SignalRConnection).ToList();
         }
         return new();
     }
@@ -175,7 +188,7 @@ public class RoomService
     public List<string> GetUserIds(int roomId)
     {
         if (_rooms.TryGetValue(roomId, out var room))
-            return room.Users.Select(x => x.SignalRConnection).ToList();
+            return room.Value.Users.Select(x => x.SignalRConnection).ToList();
         else
             return new();
     }
