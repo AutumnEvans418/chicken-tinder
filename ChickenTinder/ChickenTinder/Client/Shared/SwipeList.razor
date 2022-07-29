@@ -1,9 +1,9 @@
 ﻿@using ChickenTinder.Client.Data
 @using ChickenTinder.Shared.Models
-@inject ServerConnection server
-@inject NavigationManager nav
+@inject IServerConnection server
+@inject INavigationManager nav
 @implements IDisposable
-
+@inject ISwipeJsInterop interop
 <div class="tinder">
     <div class="tinder--status">
         <i class="fa-solid fa-heart"></i>
@@ -48,7 +48,6 @@
     [CascadingParameter]
     public Error? Error { get; set; }
     public List<Restaurant> Restaurants { get; set; } = new List<Restaurant>();
-    private SwipeJsInterop? interop;
     private int listsRemaining = 2;
     private int swipesRemaining;
 
@@ -58,7 +57,6 @@
         {
             if (firstRender)
             {
-                interop = new SwipeJsInterop(runtime);
                 interop.OnSwiped += OnSwipe;
 
                 if (!server.HasRoom)
@@ -72,8 +70,13 @@
                 if (server.Room == null)
                 {
                     nav.NavigateTo("/");
+                    return;
                 }
-
+                else if (server.Room?.Status == RoomStatus.Matched)
+                {
+                    Matched();
+                    return;
+                }
                 server.OnMatch += Matched;
                 Restaurants = server.Room?.Restaurants.ToList() ?? new List<Restaurant>();
                 swipesRemaining = Restaurants.Count;
@@ -179,6 +182,6 @@
             return;
         this.interop.OnSwiped -= OnSwipe;
         this.interop.Dispose();
-        
+
     }
 }

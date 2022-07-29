@@ -10,7 +10,7 @@ namespace ChickenTinder.Client
     // This class can be registered as scoped DI service and then injected into Blazor
     // components for use.
 
-    public class SwipeJsInterop : IDisposable
+    public class SwipeJsInterop : IDisposable, ISwipeJsInterop
     {
 
         DotNetObjectReference<SwipeJsInterop> dotNetRef;

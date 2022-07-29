@@ -1,73 +1,5 @@
-﻿
-using ChickenTinder.Client.Services;
-using ChickenTinder.Client.Pages;
-namespace Tests
+﻿namespace Tests
 {
-    public class RoomPageTests : IDisposable
-    {
-        TestContext context = new TestContext();
-        IRenderedComponent<Room> Page;
-        IServerConnection Server;
-        INavigationManager Nav;
-        Fixture fixture;
-        public RoomPageTests()
-        {
-            fixture = new Fixture();
-            fixture.Customize(new AutoNSubstituteCustomization() { ConfigureMembers = true });
-            Server = fixture.Freeze<IServerConnection>();
-            Nav = fixture.Freeze<INavigationManager>();
-            context.Services.AddSingleton(Server);
-            context.Services.AddSingleton(fixture.Freeze<IInterloopService>());
-            context.Services.AddSingleton(Nav);
-        }
-
-        public void Dispose()
-        {
-            context.Dispose();
-        }
-
-        [Fact]
-        public void RoomStateSwiping_Should_NavToSwipe()
-        {
-            Server.HasRoom.Returns(false);
-
-            fixture.Customize<DinningRoom>(p => p.With(r => r.Status, RoomStatus.Swiping));
-            Page = context.RenderComponent<Room>(ComponentParameter.CreateParameter("Id", fixture.Create<int>()));
-            Nav.Received().NavigateTo(Arg.Any<string>());
-        }
-
-        [Fact]
-        public void RoomStateMatch_Should_NavToMatch()
-        {
-            Server.HasRoom.Returns(false);
-            fixture.Customize<DinningRoom>(p => p.With(r => r.Status, RoomStatus.Matched));
-            Page = context.RenderComponent<Room>(ComponentParameter.CreateParameter("Id", fixture.Create<int>()));
-            Nav.Received().NavigateTo(Arg.Any<string>());
-        }
-    }
-
-    public class IndexPageTests
-    {
-        [Fact]
-        public void IndexNullRoom_Should_NotNavigate()
-        {
-            using var context = new TestContext();
-
-            var fixture = new Fixture();
-            fixture.Customize(new AutoNSubstituteCustomization() { ConfigureMembers = true });
-            var server = fixture.Freeze<IServerConnection>();
-            DinningRoom? room = null;
-            server.Room.Returns(room);
-
-            var nav = fixture.Freeze<INavigationManager>();
-            context.Services.AddSingleton(server);
-            context.Services.AddSingleton(nav);
-            var cut = context.RenderComponent<ChickenTinder.Client.Pages.Index>();
-
-            cut.Instance.Join();
-            nav.DidNotReceive().NavigateTo(Arg.Any<string>());
-        }
-    }
 
     public class MatchServiceTests
     {
@@ -142,10 +74,12 @@ namespace Tests
             MatchService.CheckForMatch(room).Should().Be(result);
             if (winningRestaurant != null)
             {
+                room.Status.Should().Be(RoomStatus.Matched);
                 room.WinningRestaurant.Should().Be(restaurants[winningRestaurant.Value]);
             }
             else
             {
+                room.Status.Should().NotBe(RoomStatus.Matched);
                 room.WinningRestaurant.Should().BeNull();
             }
         }
