@@ -25,15 +25,24 @@ namespace ChickenTinder.Client.Data
 
         public async Task GetLocationAsync()
         {
+            IsRetrievingLocation = true;
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(identifier: "getCurrentPosition", dotNetObjectReference);
         }
-
+        public bool IsRetrievingLocation { get; set; }
         public Action<GeoCoordinates>? OnFound { get; set; }
+        public Action? OnError { get; set; }
+        [JSInvokable]
+        public void OnFailureAsync()
+        {
+            IsRetrievingLocation = false;
+            OnError?.Invoke();
+        }
 
         [JSInvokable]
         public void OnSuccessAsync(GeoCoordinates geoCoordinates)
         {
+            IsRetrievingLocation = false;
             this.GeoCoordinates = geoCoordinates;
             OnFound?.Invoke(geoCoordinates);
         }

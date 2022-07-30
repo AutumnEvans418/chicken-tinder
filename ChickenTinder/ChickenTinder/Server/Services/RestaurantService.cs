@@ -2,7 +2,7 @@
 
 namespace ChickenTinder.Server.Services;
 
-public class RestaurantService
+public class RestaurantService : IRestaurantService
 {
     private readonly HttpClient _httpClient;
     private readonly IMemoryCache _cache;

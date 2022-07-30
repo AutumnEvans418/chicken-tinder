@@ -3,9 +3,9 @@
 public class TinderHub : Hub
 {
     private readonly RoomService _roomManager;
-    private readonly RestaurantService _restaurantService;
+    private readonly IRestaurantService _restaurantService;
 
-    public TinderHub(RoomService roomManager, RestaurantService restaurantService)
+    public TinderHub(RoomService roomManager, IRestaurantService restaurantService)
     {
         _restaurantService = restaurantService;
         _roomManager = roomManager;

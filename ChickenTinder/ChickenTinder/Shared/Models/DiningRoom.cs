@@ -20,7 +20,7 @@ public class DinningRoom
     public List<Match> Matches { get; set; }
     public List<User> PickyUsers { get; set; }
     public Restaurant? WinningRestaurant { get; set; }
-
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     public Restaurant? GetRestaurant(string Id)
     {
         return Restaurants.FirstOrDefault(x => x.ID == Id);

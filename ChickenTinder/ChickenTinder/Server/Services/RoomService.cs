@@ -4,14 +4,17 @@ namespace ChickenTinder.Server.Services;
 
 public class RoomService
 {
-    private readonly RestaurantService _reastaurantService;
+    private readonly IRestaurantService _reastaurantService;
     private readonly MatchService _matchService;
-    private readonly UserService userService;
+    private readonly IUserService userService;
     private readonly Dictionary<int, DisposalTimer<DinningRoom>> _rooms = new();
     private TimeSpan UserTimeout = TimeSpan.FromMinutes(5);
     private TimeSpan RoomTimeout = TimeSpan.FromMinutes(30);
     public List<DisposalTimer<User>> Timers { get; set; } = new();
-    public RoomService(RestaurantService restaurantService, MatchService match, UserService userService)
+    public RoomService(
+        IRestaurantService restaurantService, 
+        MatchService match, 
+        IUserService userService)
     {
         _matchService = match;
         this.userService = userService;
@@ -53,7 +56,7 @@ public class RoomService
         {
             DinningRoom room = new(user, locations)
             {
-                ID = new Random().Next(0, 99999)
+                ID = GetNextId(),
             };
             var timer = new DisposalTimer<User>(user, UserTimeout);
             timer.OnExpired = u => RemoveExpiredUsers(u, room, timer);
@@ -70,6 +73,29 @@ public class RoomService
 
         return null;
     }
+    public int MaxId { get; set; } = 99999;
+    public int MinId { get; set; } = 1;
+    public int GetNextId()
+    {
+        var id = new Random().Next(MinId, MaxId);
+        if (!_rooms.ContainsKey(id))
+            return id;
+
+        var data = Enumerable.Range(MinId, MaxId);
+        
+        foreach (var item in data)
+        {
+            if (!_rooms.ContainsKey(item))
+            {
+                return item;
+            }
+        }
+        var minDate = _rooms.Min(p => p.Value.Value.DateCreated);
+        var oldestRoom = _rooms.First(p => p.Value.Value.DateCreated == minDate);
+        _rooms.Remove(oldestRoom.Key);
+        return oldestRoom.Key;
+    }
+
 
     public void RemoveRoom(DisposalTimer<DinningRoom> room)
     {

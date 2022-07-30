@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace ChickenTinder.Client.Data
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IWebHostEnvironment environment;
         private Random random = new Random();

@@ -19,6 +19,7 @@
 
     function error(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
+        dotNetHelper.invokeMethodAsync('OnFailureAsync');
     }
 
     navigator.geolocation.getCurrentPosition(success, error, options);

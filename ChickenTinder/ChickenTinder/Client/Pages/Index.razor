@@ -25,6 +25,13 @@
             }
             <button class="btn btn-small" @onclick="() => location.GetLocationAsync()"><i class="fa-solid fa-location-crosshairs"></i></button>
         </div>
+
+        @if (location.IsRetrievingLocation)
+        {
+            <div class="center-all">
+                <p>Getting your location...</p>
+            </div>
+        }
         <div class="center-all">
             <p style="margin: 0px">Host or Enter Code</p>
         </div>
@@ -76,6 +83,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         await interloop.SetUserId(server.User);
+        location.OnError = () =>
+        {
+            StateHasChanged();
+        };
+
         location.OnFound = g =>
         {
             server.User.Longitude = location.GeoCoordinates?.Longitude.ToString();
@@ -83,6 +95,8 @@ else
             server.User.Location = $"{server.User.Latitude},{server.User.Longitude}";
             StateHasChanged();
         };
+        await location.GetLocationAsync();
+
     }
 
     public async void Join()

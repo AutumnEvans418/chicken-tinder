@@ -20,8 +20,8 @@ builder.Services.AddHttpClient("YelpClient", x=>
 
 builder.Services.AddSingleton<RoomService>();
 builder.Services.AddSingleton<MatchService>();
-builder.Services.AddSingleton<RestaurantService>();
-builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<IRestaurantService, RestaurantService>();
+builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<HttpClient>();
 
 builder.Services.AddSignalR(o =>
