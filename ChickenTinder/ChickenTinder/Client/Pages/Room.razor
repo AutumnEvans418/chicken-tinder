@@ -61,13 +61,21 @@ else
                 {
                     await _shareService.SetUserId(server.User);
                     await server.JoinRoom(Id.Value);
-                    if (server.Room?.Status == RoomStatus.Swiping)
+                    if (server.Room == null)
+                    {
+                        var message = Uri.EscapeDataString($"room {Id} does not exist");
+                        nav.NavigateTo($"/?message={message}");
+                        return;
+                    }
+                    else if (server.Room?.Status == RoomStatus.Swiping)
                     {
                         Start();
+                        return;
                     }
-                    else if(server.Room?.Status == RoomStatus.Matched)
+                    else if (server.Room?.Status == RoomStatus.Matched)
                     {
-                         nav.NavigateTo($"/match/{server.Room.ID}");
+                        nav.NavigateTo($"/match/{server.Room.ID}");
+                        return;
                     }
                     StateHasChanged();
                 }

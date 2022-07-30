@@ -20,6 +20,8 @@ namespace Tests
             context.Services.AddSingleton(Server);
             context.Services.AddSingleton(fixture.Freeze<IInterloopService>());
             context.Services.AddSingleton(Nav);
+            context.Services.AddSingleton(fixture.Freeze<ILocationService>());
+
             //Page = context.RenderComponent<T>();
         }
 

@@ -6,7 +6,7 @@
 @inject INavigationManager NavMan
 @inject IInterloopService _interloopService;
 @inject IJSRuntime _js;
-
+@inject INavigationManager nav
 <HeaderView></HeaderView>
 @*<div class="pyro">
   <div class="before"></div>
@@ -118,6 +118,12 @@ else
                     .Matches
                     .Where(p => p.Restaurant?.ID == WinningRestaurant.ID)
                     .ToList();
+            }
+            if (Room == null)
+            {
+                var message = Uri.EscapeDataString($"room {RoomID} does not exist");
+                this.nav.NavigateTo($"/?message={message}");
+                return;
             }
 
         }

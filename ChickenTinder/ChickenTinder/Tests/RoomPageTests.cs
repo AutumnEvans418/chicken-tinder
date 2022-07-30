@@ -16,8 +16,8 @@ namespace Tests
             Server.HasRoom.Returns(false);
 
             fixture.Customize<DinningRoom>(p => p.With(r => r.Status, RoomStatus.Swiping));
-            Page = context.RenderComponent<Room>(ComponentParameter.CreateParameter("Id", fixture.Create<int>()));
-            Nav.Received().NavigateTo(Arg.Any<string>());
+            CreatePage();
+            Nav.Received(1).NavigateTo(Arg.Any<string>());
         }
 
         [Fact]
@@ -25,8 +25,24 @@ namespace Tests
         {
             Server.HasRoom.Returns(false);
             fixture.Customize<DinningRoom>(p => p.With(r => r.Status, RoomStatus.Matched));
+            CreatePage();
+            Nav.Received(1).NavigateTo(Arg.Any<string>());
+        }
+
+        private void CreatePage()
+        {
             Page = context.RenderComponent<Room>(ComponentParameter.CreateParameter("Id", fixture.Create<int>()));
-            Nav.Received().NavigateTo(Arg.Any<string>());
+        }
+
+        [Fact]
+        public void RoomNull_Should_GoToIndexWithMessage()
+        {
+            Server.HasRoom.Returns(false);
+            DinningRoom? room = null;
+            Server.Room.Returns(room);
+            CreatePage();
+            var message = $"room {Page!.Instance.Id} does not exist";
+            Nav.Received(1).NavigateTo($"/?message={Uri.EscapeDataString(message)}");
         }
     }
 }

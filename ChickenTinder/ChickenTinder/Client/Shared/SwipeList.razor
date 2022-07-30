@@ -72,7 +72,8 @@
 
                 if (server.Room == null)
                 {
-                    nav.NavigateTo("/");
+                    var message = Uri.EscapeDataString($"room {Id} does not exist");
+                    this.nav.NavigateTo($"/?message={message}");
                     return;
                 }
                 else if (server.Room?.Status == RoomStatus.Matched)
