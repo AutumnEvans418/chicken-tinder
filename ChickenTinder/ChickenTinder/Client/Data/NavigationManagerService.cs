@@ -14,5 +14,7 @@ namespace ChickenTinder.Client.Data
         public void NavigateTo(string url) => nav.NavigateTo(url);
 
         public void NavigateTo(string url, bool force) => nav.NavigateTo(url, force);
+
+        public Uri ToAbsoluteUri(string url) => nav.ToAbsoluteUri(url);
     }
 }

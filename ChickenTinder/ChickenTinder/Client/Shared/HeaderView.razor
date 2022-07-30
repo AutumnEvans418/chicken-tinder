@@ -2,6 +2,7 @@
 @inject INavigationManager nav 
 <div class="header-right">
     <UserBadge User="@server.User" Width="64"></UserBadge>
+    Users: @server.Room?.Users.Count
 </div>
 <div class="header-left">
     <a @onclick="Home"><img src="icon-96.png" width="64" height="64"/></a> 

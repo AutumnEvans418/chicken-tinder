@@ -1,9 +1,11 @@
 ﻿@using ChickenTinder.Client.Data
+@using ChickenTinder.Client.Services
 @using ChickenTinder.Shared.Models
 @inject IServerConnection server
 @inject INavigationManager nav
 @implements IDisposable
 @inject ISwipeJsInterop interop
+@inject IInterloopService interloop
 <div class="tinder">
     <div class="tinder--status">
         <i class="fa-solid fa-heart"></i>
@@ -63,6 +65,7 @@
                 {
                     if (Id.HasValue)
                     {
+                        await interloop.SetUserId(server.User);
                         await server.JoinRoom(Id.Value);
                     }
                 }
@@ -182,6 +185,5 @@
             return;
         this.interop.OnSwiped -= OnSwipe;
         this.interop.Dispose();
-
     }
 }

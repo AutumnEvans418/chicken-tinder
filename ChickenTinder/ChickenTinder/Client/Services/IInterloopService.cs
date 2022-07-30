@@ -1,4 +1,5 @@
 ﻿using ChickenTinder.Shared.Api;
+using ChickenTinder.Shared.Models;
 
 namespace ChickenTinder.Client.Services
 {
@@ -9,5 +10,6 @@ namespace ChickenTinder.Client.Services
         Task LaunchMaps(string lat, string lon);
         Task SetLocalStorage(string key, string value);
         Task ShareUrl(string url);
+        Task SetUserId(User user);
     }
 }

@@ -36,6 +36,7 @@ namespace ChickenTinder.Client
         [JSInvokable]
         public void Swipe(int direction)
         {
+            Console.WriteLine($"direction: {direction}");
             OnSwiped?.Invoke(this, (SwipeDirection)direction);
         }
 

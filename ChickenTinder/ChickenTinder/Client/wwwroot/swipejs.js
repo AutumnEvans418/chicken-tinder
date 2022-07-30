@@ -3,6 +3,7 @@ var tinderContainer = null;
 var allCards = null;
 var hammertime = null;
 function swiped(direction) {
+    console.log('directionjs: ' + direction);
     dotRef.invokeMethodAsync("Swipe", direction);
 }
 window.clipboardCopy = {
@@ -81,7 +82,9 @@ function setupCard(el) {
 
         let isMaybe = event.direction == Hammer.DIRECTION_LEFT;
         el.classList.toggle('removed', !keep);
-        keep = keep && allowDirections.includes(event.direction);
+        keep = keep || !allowDirections.includes(event.direction);
+        console.log('keep: ' + keep + ",direction: " + event.direction);
+        console.log('allowed moves: ' + allowDirections);
         if (keep) {
             el.style.transform = '';
         } else {

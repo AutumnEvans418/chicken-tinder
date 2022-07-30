@@ -1,8 +1,11 @@
 ﻿@page "/"
 @using ChickenTinder.Client.Data
+@using ChickenTinder.Client.Services
 @inject INavigationManager nav
 @inject IServerConnection server;
-
+@inject ILocationService location
+@inject IInterloopService interloop
+@implements IAsyncDisposable
 @if (!_isLoading)
 {
     <div class="center-all">
@@ -21,7 +24,7 @@
             {
                 <input value="@server.User.Location" @oninput="e => server.User.Location = e.Value?.ToString()" placeholder="Location" class="textbox">
             }
-            <button class="btn btn-small" @onclick="() => server.SetLocation()"><i class="fa-solid fa-location-crosshairs"></i></button>
+            <button class="btn btn-small" @onclick="() => location.GetLocationAsync()"><i class="fa-solid fa-location-crosshairs"></i></button>
         </div>
         <div class="center-all">
             <p style="margin: 0px">Host or Enter Code</p>
@@ -30,9 +33,12 @@
             <input class="textbox" type="number" placeholder="Code" value="@Code" @oninput="e => Code = e.Value?.ToString()" />
         </div>
         <div class="center-bottom">
-            @if(server.IsLocationSet || !string.IsNullOrWhiteSpace(Code)){
+            @if (server.IsLocationSet || !string.IsNullOrWhiteSpace(Code))
+            {
                 <button class="btn" @onclick="Join">@JoinText</button>
-            } else {
+            }
+            else
+            {
                 <button disabled class="btn" @onclick="Join">@JoinText</button>
             }
 
@@ -41,7 +47,7 @@
 }
 else
 {
-   <Spinner/>
+    <Spinner />
 }
 
 
@@ -70,7 +76,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        server.OnLocationChanged = () => StateHasChanged();
+        await interloop.SetUserId(server.User);
+        location.OnFound = g =>
+        {
+            server.User.Longitude = location.GeoCoordinates?.Longitude.ToString();
+            server.User.Latitude = location.GeoCoordinates?.Latitude.ToString();
+            server.User.Location = $"{server.User.Latitude},{server.User.Longitude}";
+            StateHasChanged();
+        };
     }
 
     public async void Join()
@@ -100,6 +113,11 @@ else
         {
             Error?.ProcessError(ex, true, true);
         }
-       
+
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await this.location.DisposeAsync();
     }
 }

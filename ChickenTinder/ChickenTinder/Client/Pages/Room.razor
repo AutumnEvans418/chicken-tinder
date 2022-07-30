@@ -59,6 +59,7 @@ else
             {
                 if (Id.HasValue)
                 {
+                    await _shareService.SetUserId(server.User);
                     await server.JoinRoom(Id.Value);
                     if (server.Room?.Status == RoomStatus.Swiping)
                     {

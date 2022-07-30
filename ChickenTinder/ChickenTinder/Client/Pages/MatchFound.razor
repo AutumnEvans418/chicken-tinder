@@ -108,6 +108,7 @@ else
     {
         try
         {
+            await _interloopService.SetUserId(ServerConnection.User);
             Room = await ServerConnection.GetRoom(RoomID);
             if (Room != null && Room?.WinningRestaurant != null)
             {

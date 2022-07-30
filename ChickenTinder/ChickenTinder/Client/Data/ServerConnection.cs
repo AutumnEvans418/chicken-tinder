@@ -8,29 +8,15 @@ namespace ChickenTinder.Client.Data
 {
     public class ServerConnection : IAsyncDisposable, IServerConnection
     {
-        private readonly LocationService _locationService;
         private readonly HubConnection _hubConnection;
-        private readonly InterloopService _interloopService;
         private readonly ILogger<ServerConnection> logger;
         private User user = new User();
 
         public ServerConnection(
-            NavigationManager NavigationManager,
-            LocationService locationService,
-            InterloopService interloop,
+            INavigationManager NavigationManager,
             ILogger<ServerConnection> logger)
         {
-            locationService.OnFound = g =>
-            {
-                User.Longitude = locationService.GeoCoordinates?.Longitude.ToString();
-                User.Latitude = locationService.GeoCoordinates?.Latitude.ToString();
-                User.Location = $"{User.Latitude},{User.Longitude}";
-                OnLocationChanged?.Invoke();
-            };
-            _interloopService = interloop;
             this.logger = logger;
-            _locationService = locationService;
-
 
             _hubConnection = new HubConnectionBuilder()
                                 .WithUrl(NavigationManager.ToAbsoluteUri("/tinderhub"))
@@ -124,15 +110,9 @@ namespace ChickenTinder.Client.Data
                 await _hubConnection.StartAsync();
 
 
-                var userId = await _interloopService.GetLocalStorage("UserId");
-                if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(_hubConnection.ConnectionId))
-                {
-                    userId = User.Id;
-                    await _interloopService.SetLocalStorage("UserId", userId);
-                }
 
                 //_user.SignalRConnection = userId ?? "NA";
-                User.Id = userId ?? throw new Exception("userid cannot be null");
+                //User.Id = userId ?? throw new Exception("userid cannot be null");
 
                 User.SignalRConnection = _hubConnection.ConnectionId ?? throw new Exception("not connected");
             }
@@ -141,14 +121,6 @@ namespace ChickenTinder.Client.Data
                 logger.LogError(ex, "connect failed");
                 throw;
             }
-        }
-
-        public async Task SetLocation()
-        {
-            if (User == null)
-                return;
-            await _locationService.GetLocationAsync();
-
         }
 
         public async Task CreateRoom()

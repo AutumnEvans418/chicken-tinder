@@ -2,11 +2,9 @@
 
 namespace ChickenTinder.Client
 {
-    public interface ISwipeJsInterop
+    public interface ISwipeJsInterop : IDisposable
     {
         event EventHandler<SwipeDirection>? OnSwiped;
-
-        void Dispose();
         Task InitCards();
         Task Start();
         void Swipe(int direction);

@@ -2,7 +2,7 @@
 
 namespace ChickenTinder.Client.Data
 {
-    public class LocationService
+    public class LocationService : ILocationService
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = default!;
         private readonly DotNetObjectReference<LocationService> dotNetObjectReference;

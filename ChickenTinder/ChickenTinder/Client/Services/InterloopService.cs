@@ -1,4 +1,5 @@
 ﻿using ChickenTinder.Shared.Api;
+using ChickenTinder.Shared.Models;
 using Microsoft.JSInterop;
 
 namespace ChickenTinder.Client.Services
@@ -35,6 +36,17 @@ namespace ChickenTinder.Client.Services
         public async Task LaunchMaps(Location location)
         {
             await _jsRuntime.InvokeAsync<string?>("interloop.LaunchMaps", location.Address1);
+        }
+
+        public async Task SetUserId(User user)
+        {
+            var userId = await GetLocalStorage("UserId");
+            if (string.IsNullOrEmpty(userId))
+            {
+                userId = user.Id;
+                await SetLocalStorage("UserId", userId);
+            }
+            user.Id = userId;
         }
     }
 }
