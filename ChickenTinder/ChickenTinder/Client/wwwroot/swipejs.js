@@ -20,10 +20,10 @@ function handleMaybe(el) {
     console.log("was maybe");
     el.classList.remove('removed');
     let tinderCards = document.querySelector('.tinder--cards');
-    let card = tinderCards.querySelector('.tinder--card:not(.removed)');
+    //let card = tinderCards.querySelector('.tinder--card:not(.removed)');
     //console.log(first);
-    tinderCards.removeChild(card);
-    tinderCards.appendChild(card);
+    tinderCards.removeChild(el);
+    tinderCards.appendChild(el);
     el.style.transform = '';
 }
 
@@ -118,22 +118,21 @@ function createButtonListener(love) {
 
         var card = cards[0];
 
-
         if (love == Hammer.DIRECTION_RIGHT) {
             card.style.transform = 'translate(' + moveOutWidth + 'px, -100px) rotate(-30deg)';
+            card.classList.add('removed');
         } else if (love == Hammer.DIRECTION_LEFT) {
             handleMaybe(card);
             //card.style.transform = 'translate(-' + moveOutWidth + 'px, -100px) rotate(30deg)';
         } else if (love == Hammer.DIRECTION_UP) {
             card.style.transform = 'translate(-200px, -' + moveOutHeight + 'px) rotate(10deg)';
+            card.classList.add('removed');
         } else if (love == Hammer.DIRECTION_DOWN) {
             card.style.transform = 'translate(-200px, ' + moveOutHeight + 'px) rotate(-10deg)';
+            card.classList.add('removed');
         } else {
             return;
         }
-
-        card.classList.add('removed');
-
 
         window.Swipe.initCards();
         swiped(love);
