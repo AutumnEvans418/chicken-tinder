@@ -9,7 +9,7 @@
 
 @if (server.HasRoom)
 {
-    <h3 class="center-all">Dinning Room Code</h3>
+    <h3 class="center-all">Dining Room Code</h3>
     <h3 class="center-all" style="margin-bottom: 5%;">@server.Room?.ID <btn class="btn btn-small" @onclick="Share"><i class="fa-solid fa-share"></i></btn> </h3>
     @foreach (var user in server.Room?.Users ?? new List<User>())
     {
